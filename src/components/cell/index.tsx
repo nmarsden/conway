@@ -1,9 +1,10 @@
-import {FunctionalComponent, h, RenderableProps} from 'preact';
+import {FunctionalComponent, h} from 'preact';
 import style from './style.css';
+import classNames from "classnames";
 
-const Cell: FunctionalComponent = (props:RenderableProps<any>) => {
+const Cell: FunctionalComponent<{ isActive: boolean }> = ({ isActive}) => {
     return (
-      <div class={style['cell']}></div>
+      <div class={classNames(style.cell, {[style.active]: isActive})}/>
     );
 };
 
