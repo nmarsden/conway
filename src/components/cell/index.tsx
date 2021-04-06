@@ -4,7 +4,7 @@ import classNames from "classnames";
 
 const Cell: FunctionalComponent<{ isActive: boolean }> = ({ isActive}) => {
     return (
-      <div class={classNames(style.cell, {[style.active]: isActive})}/>
+      <div class={classNames(style.cell, {[style.active]: isActive})} />
     );
 };
 

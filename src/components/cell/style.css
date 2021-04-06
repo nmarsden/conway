@@ -1,10 +1,10 @@
 .cell {
 	width: 30px;
 	height: 30px;
-	background: white;
-	border: 1px solid black;
+	background: transparent;
+	border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .active {
-	background: #1165de;
+	background: rgba(17, 101, 222, 0.5);
 }

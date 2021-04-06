@@ -1,7 +1,6 @@
 .board-container {
 	width: 300px;
 	height: 300px;
-	background: red;
 	display: flex;
 	flex-wrap: wrap;
 }
