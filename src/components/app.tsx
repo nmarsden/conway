@@ -1,25 +1,52 @@
-import { FunctionalComponent, h } from 'preact';
+import { Component, h } from 'preact';
 import Board from './board';
-import {useState} from "preact/hooks";
 import {Simulator} from "../utils/simulator";
 
-const simulator = new Simulator();
+const SPEED = 500;
+const CELL_SIZE = 30;
+const pageWidth = window.innerWidth;
+const pageHeight = window.innerHeight;
+const numColumns = Math.floor(pageWidth / CELL_SIZE);
+const numRows = Math.floor(pageHeight / CELL_SIZE);
 
-const App: FunctionalComponent = () => {
+const simulator = new Simulator({
+  numColumns,
+  numRows
+});
 
-  const [cellData, setCellData] = useState(simulator.initialState());
+type AppProps = {
+};
 
-  const nextGeneration = (): void => {
-    setCellData(simulator.nextGeneration());
+type AppState = {
+  cellData: number[];
+};
+
+class App extends Component<AppProps, AppState> {
+
+  timer: any;
+
+  constructor(props: AppProps) {
+    super(props);
+    this.state = { cellData: simulator.initialState() };
   }
 
-  setTimeout(nextGeneration,1000);
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      this.setState({ cellData: simulator.nextGeneration() });
+    }, SPEED);
+  }
 
-  return (
-    <div id="app">
-      <Board cellData={ cellData } />
-    </div>
-  );
-};
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
+  render() {
+    return (
+      <div id="app">
+        <Board cellData={ this.state.cellData } />
+      </div>
+    );
+  }
+}
 
 export default App;
