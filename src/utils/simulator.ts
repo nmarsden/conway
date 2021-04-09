@@ -3,6 +3,11 @@ type SimulatorSettings = {
   numRows: number;
 }
 
+export type Generation = {
+  num: number;
+  cellData: number[];
+}
+
 const PATTERNS = {
   blinker: [
     '   ',
@@ -23,27 +28,27 @@ const PATTERNS = {
 
 export class Simulator {
   private settings: SimulatorSettings;
-  private cellData: number[];
+  private generation: Generation;
 
   constructor(settings: SimulatorSettings) {
     this.settings = settings;
-    this.cellData = [];
+    this.generation = { num: 0, cellData: [] };
   }
 
-  initialState(): number[] {
-    this.cellData = this.initialCellData();
-    return [...this.cellData];
+  initialGeneration(): Generation {
+    this.generation = { num: 1, cellData: this.initialCellData() };
+    return { ...this.generation };
   }
 
-  nextGeneration(): number[] {
-    const updatedCellData = [...this.cellData];
+  nextGeneration(): Generation {
+    const updatedCellData = [...this.generation.cellData];
     for(let col=0; col<this.settings.numColumns; col++) {
       for(let row=0; row<this.settings.numRows; row++) {
         updatedCellData[this.toIndex(col, row)] = (this.isActive(col, row) ? 1 : 0);
       }
     }
-    this.cellData = updatedCellData;
-    return [...this.cellData];
+    this.generation = { num: this.generation.num + 1, cellData: updatedCellData };
+    return { ...this.generation };
   }
 
   private applyPattern(cellDataToUpdate: number[], pattern: string[]): void {
@@ -62,8 +67,8 @@ export class Simulator {
   private initialCellData(): number[] {
     const newCellData = new Array(this.settings.numColumns * this.settings.numRows).fill(0);
 
-    // this.applyPattern(newCellData, PATTERNS['blinker']);
-    this.applyPattern(newCellData, PATTERNS['glider']);
+    this.applyPattern(newCellData, PATTERNS['blinker']);
+    // this.applyPattern(newCellData, PATTERNS['glider']);
     // this.applyPattern(newCellData, PATTERNS['lightweightSpaceship']);
 
     return newCellData;
@@ -76,7 +81,7 @@ export class Simulator {
   }
 
   private cellValue(col: number, row: number): number {
-    return this.cellData[this.toIndex(col, row)];
+    return this.generation.cellData[this.toIndex(col, row)];
   }
 
   private activeNeighbourCount(col: number, row: number): number {

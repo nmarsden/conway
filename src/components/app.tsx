@@ -1,6 +1,6 @@
-import { Component, h } from 'preact';
+import {Component, h} from 'preact';
+import {Generation, Simulator} from "../utils/simulator";
 import Board from './board';
-import {Simulator} from "../utils/simulator";
 
 const SPEED = 500;
 const CELL_SIZE = 30;
@@ -14,11 +14,10 @@ const simulator = new Simulator({
   numRows
 });
 
-type AppProps = {
-};
+type AppProps = {};
 
 type AppState = {
-  cellData: number[];
+  generation: Generation;
 };
 
 class App extends Component<AppProps, AppState> {
@@ -26,24 +25,28 @@ class App extends Component<AppProps, AppState> {
   timer: any;
 
   constructor(props: AppProps) {
+    console.log('App constructor!');
     super(props);
-    this.state = { cellData: simulator.initialState() };
-  }
-
-  componentDidMount() {
+    this.state = {generation: simulator.initialGeneration()};
     this.timer = setInterval(() => {
-      this.setState({ cellData: simulator.nextGeneration() });
+      this.setState({generation: simulator.nextGeneration()});
     }, SPEED);
   }
 
+  componentDidMount() {
+    console.log('App Did Mount!');
+  }
+
   componentWillUnmount() {
+    console.log('App Will Unmount!');
     clearInterval(this.timer);
   }
 
   render() {
+    console.log('App render! generation:', this.state.generation.num);
     return (
       <div id="app">
-        <Board cellData={ this.state.cellData } />
+        <Board cellData={this.state.generation.cellData} />
       </div>
     );
   }
