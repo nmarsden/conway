@@ -1,15 +1,19 @@
 import {Component, h} from 'preact';
 import {Generation, Simulator} from "../utils/simulator";
 import {NextGenStateUpdater} from "../utils/nextGenStateUpdater";
+import SettingsModal, {Settings} from "./settingsModal";
+import SettingsButton from "./settingsButton";
 import Board from './board';
 
-const SPEED = 500;
+const SPEED = 5;
 const CELL_SIZE = 50;
 
 type AppProps = {};
 
 type AppState = {
+  settings: Settings;
   generation: Generation;
+  isSettingsModalOpen: boolean;
 };
 
 let nextGenStateUpdater: NextGenStateUpdater;
@@ -26,7 +30,7 @@ class App extends Component<AppProps, AppState> {
   init = (): void => {
     const simulator = this.initSimulator();
     this.initAppState(simulator);
-    this.initNextGenStateUpdater(simulator);
+    this.initNextGenStateUpdater(simulator, SPEED);
   };
 
   private initSimulator(): Simulator {
@@ -42,15 +46,31 @@ class App extends Component<AppProps, AppState> {
   }
 
   private initAppState(simulator: Simulator): void {
-    this.state = {generation: simulator.initialGeneration()};
+    this.state = {
+      settings: {
+        speed: SPEED
+      },
+      generation: simulator.initialGeneration(),
+      isSettingsModalOpen: false
+    };
   }
 
-  private initNextGenStateUpdater(simulator: Simulator): void {
+  private initNextGenStateUpdater(simulator: Simulator, speed: number): void {
     if (nextGenStateUpdater) {
       nextGenStateUpdater.stop();
     }
-    nextGenStateUpdater = new NextGenStateUpdater(this, simulator, SPEED);
+    nextGenStateUpdater = new NextGenStateUpdater(this, simulator, speed);
     nextGenStateUpdater.start();
+  }
+
+  settingsChanged = (settings: Settings): void => {
+    this.setState({ settings });
+
+    nextGenStateUpdater.setSpeed(settings.speed);
+  }
+
+  settingsButtonClicked = (): void => {
+    this.setState( { isSettingsModalOpen: !this.state.isSettingsModalOpen });
   }
 
   componentDidMount() {
@@ -63,10 +83,12 @@ class App extends Component<AppProps, AppState> {
   }
 
   render() {
-    //console.log('App render! generation:', this.state.generation.num);
+    // console.log('App render! generation:', this.state.generation.num);
     return (
       <div id="app">
         <Board cellData={this.state.generation.cellData} cellSize={CELL_SIZE} />
+        { this.state.isSettingsModalOpen ? <SettingsModal settings={this.state.settings} onSettingsChanged={this.settingsChanged} /> : '' }
+        <SettingsButton onClicked={this.settingsButtonClicked} />
       </div>
     );
   }
