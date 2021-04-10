@@ -4,7 +4,7 @@ import {NextGenStateUpdater} from "../utils/nextGenStateUpdater";
 import Board from './board';
 
 const SPEED = 500;
-const CELL_SIZE = 30;
+const CELL_SIZE = 50;
 
 type AppProps = {};
 
@@ -30,10 +30,11 @@ class App extends Component<AppProps, AppState> {
   };
 
   private initSimulator(): Simulator {
-    const pageWidth = window.innerWidth;
-    const pageHeight = window.innerHeight;
+    const pageWidth = (document.documentElement.clientWidth || document.body.clientWidth);
+    const pageHeight = (document.documentElement.clientHeight || document.body.clientHeight);
     const numColumns = Math.floor(pageWidth / CELL_SIZE);
     const numRows = Math.floor(pageHeight / CELL_SIZE);
+
     return new Simulator({
       numColumns,
       numRows
@@ -62,10 +63,10 @@ class App extends Component<AppProps, AppState> {
   }
 
   render() {
-    console.log('App render! generation:', this.state.generation.num);
+    //console.log('App render! generation:', this.state.generation.num);
     return (
       <div id="app">
-        <Board cellData={this.state.generation.cellData} />
+        <Board cellData={this.state.generation.cellData} cellSize={CELL_SIZE} />
       </div>
     );
   }
