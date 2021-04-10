@@ -5,8 +5,10 @@ import SettingsModal, {Settings} from "./settingsModal";
 import SettingsButton from "./settingsButton";
 import Board from './board';
 
-const SPEED = 5;
-const CELL_SIZE = 50;
+const DEFAULT_SETTINGS: Settings = {
+  speed: 5,
+  cellSize: 50
+}
 
 type AppProps = {};
 
@@ -23,21 +25,21 @@ class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     console.log('App constructor!');
-    window.addEventListener("resize", this.init);
-    this.init();
+    window.addEventListener("resize", () => this.init(this.state.settings));
+    this.init(DEFAULT_SETTINGS);
   }
 
-  init = (): void => {
-    const simulator = this.initSimulator();
-    this.initAppState(simulator);
-    this.initNextGenStateUpdater(simulator, SPEED);
+  init = (settings: Settings): void => {
+    const simulator = this.initSimulator(settings.cellSize);
+    this.initAppState(settings, simulator);
+    this.initNextGenStateUpdater(simulator, settings.speed);
   };
 
-  private initSimulator(): Simulator {
+  private initSimulator(cellSize: number): Simulator {
     const pageWidth = (document.documentElement.clientWidth || document.body.clientWidth);
     const pageHeight = (document.documentElement.clientHeight || document.body.clientHeight);
-    const numColumns = Math.floor(pageWidth / CELL_SIZE);
-    const numRows = Math.floor(pageHeight / CELL_SIZE);
+    const numColumns = Math.floor(pageWidth / cellSize);
+    const numRows = Math.floor(pageHeight / cellSize);
 
     return new Simulator({
       numColumns,
@@ -45,11 +47,9 @@ class App extends Component<AppProps, AppState> {
     });
   }
 
-  private initAppState(simulator: Simulator): void {
+  private initAppState(settings: Settings, simulator: Simulator): void {
     this.state = {
-      settings: {
-        speed: SPEED
-      },
+      settings,
       generation: simulator.initialGeneration(),
       isSettingsModalOpen: false
     };
@@ -64,9 +64,23 @@ class App extends Component<AppProps, AppState> {
   }
 
   settingsChanged = (settings: Settings): void => {
-    this.setState({ settings });
+    const cellSizeChanged = (settings.cellSize !== this.state.settings.cellSize);
+    if (cellSizeChanged) {
+      this.updateCellSize(settings.cellSize);
+    }
+    else {
+      this.setState({settings});
+      nextGenStateUpdater.setSpeed(settings.speed);
+    }
+  }
 
-    nextGenStateUpdater.setSpeed(settings.speed);
+  updateCellSize(cellSize: number): void {
+    const simulator = this.initSimulator(cellSize);
+    this.setState({
+      settings: { ...this.state.settings, cellSize },
+      generation: simulator.initialGeneration()
+    });
+    this.initNextGenStateUpdater(simulator, this.state.settings.speed);
   }
 
   settingsButtonClicked = (): void => {
@@ -86,7 +100,7 @@ class App extends Component<AppProps, AppState> {
     // console.log('App render! generation:', this.state.generation.num);
     return (
       <div id="app">
-        <Board cellData={this.state.generation.cellData} cellSize={CELL_SIZE} />
+        <Board cellData={this.state.generation.cellData} cellSize={this.state.settings.cellSize} />
         { this.state.isSettingsModalOpen ? <SettingsModal settings={this.state.settings} onSettingsChanged={this.settingsChanged} /> : '' }
         <SettingsButton onClicked={this.settingsButtonClicked} />
       </div>
