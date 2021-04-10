@@ -1,18 +1,10 @@
 import {Component, h} from 'preact';
 import {Generation, Simulator} from "../utils/simulator";
+import {NextGenStateUpdater} from "../utils/nextGenStateUpdater";
 import Board from './board';
 
 const SPEED = 500;
 const CELL_SIZE = 30;
-const pageWidth = window.innerWidth;
-const pageHeight = window.innerHeight;
-const numColumns = Math.floor(pageWidth / CELL_SIZE);
-const numRows = Math.floor(pageHeight / CELL_SIZE);
-
-const simulator = new Simulator({
-  numColumns,
-  numRows
-});
 
 type AppProps = {};
 
@@ -20,17 +12,44 @@ type AppState = {
   generation: Generation;
 };
 
+let nextGenStateUpdater: NextGenStateUpdater;
+
 class App extends Component<AppProps, AppState> {
 
-  timer: any;
-
   constructor(props: AppProps) {
-    console.log('App constructor!');
     super(props);
+    console.log('App constructor!');
+    window.addEventListener("resize", this.init);
+    this.init();
+  }
+
+  init = (): void => {
+    const simulator = this.initSimulator();
+    this.initAppState(simulator);
+    this.initNextGenStateUpdater(simulator);
+  };
+
+  private initSimulator(): Simulator {
+    const pageWidth = window.innerWidth;
+    const pageHeight = window.innerHeight;
+    const numColumns = Math.floor(pageWidth / CELL_SIZE);
+    const numRows = Math.floor(pageHeight / CELL_SIZE);
+    return new Simulator({
+      numColumns,
+      numRows
+    });
+  }
+
+  private initAppState(simulator: Simulator): void {
     this.state = {generation: simulator.initialGeneration()};
-    this.timer = setInterval(() => {
-      this.setState({generation: simulator.nextGeneration()});
-    }, SPEED);
+  }
+
+  private initNextGenStateUpdater(simulator: Simulator): void {
+    if (nextGenStateUpdater) {
+      nextGenStateUpdater.stop();
+    }
+    nextGenStateUpdater = new NextGenStateUpdater(this, simulator, SPEED);
+    nextGenStateUpdater.start();
   }
 
   componentDidMount() {
@@ -39,7 +58,7 @@ class App extends Component<AppProps, AppState> {
 
   componentWillUnmount() {
     console.log('App Will Unmount!');
-    clearInterval(this.timer);
+    nextGenStateUpdater.stop();
   }
 
   render() {
