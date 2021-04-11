@@ -38,7 +38,7 @@ class PatternDropdown extends Component<PatternDropdownProps, PatternDropdownSta
     }
 
     private patternDisplayName(pattern: string): string {
-        return pattern.replace('_', ' ');
+        return pattern.replace(/_/g, ' ');
     }
 
     render() {

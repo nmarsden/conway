@@ -7,7 +7,7 @@ import Board from './board';
 
 const DEFAULT_SETTINGS: Settings = {
   speed: 5,
-  cellSize: 50,
+  cellSize: 20,
   pattern: Pattern.Glider
 }
 
