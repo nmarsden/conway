@@ -1,5 +1,5 @@
 import {Component, h} from 'preact';
-import {Generation, Simulator} from "../utils/simulator";
+import {Generation, Pattern, Simulator} from "../utils/simulator";
 import {NextGenStateUpdater} from "../utils/nextGenStateUpdater";
 import SettingsModal, {Settings} from "./settingsModal";
 import SettingsButton from "./settingsButton";
@@ -7,7 +7,8 @@ import Board from './board';
 
 const DEFAULT_SETTINGS: Settings = {
   speed: 5,
-  cellSize: 50
+  cellSize: 50,
+  pattern: Pattern.Glider
 }
 
 type AppProps = {};
@@ -30,12 +31,12 @@ class App extends Component<AppProps, AppState> {
   }
 
   init = (settings: Settings): void => {
-    const simulator = this.initSimulator(settings.cellSize);
+    const simulator = this.initSimulator(settings.cellSize, settings.pattern);
     this.initAppState(settings, simulator);
     this.initNextGenStateUpdater(simulator, settings.speed);
   };
 
-  private initSimulator(cellSize: number): Simulator {
+  private initSimulator(cellSize: number, pattern: Pattern): Simulator {
     const pageWidth = (document.documentElement.clientWidth || document.body.clientWidth);
     const pageHeight = (document.documentElement.clientHeight || document.body.clientHeight);
     const numColumns = Math.floor(pageWidth / cellSize);
@@ -43,7 +44,8 @@ class App extends Component<AppProps, AppState> {
 
     return new Simulator({
       numColumns,
-      numRows
+      numRows,
+      pattern
     });
   }
 
@@ -65,8 +67,9 @@ class App extends Component<AppProps, AppState> {
 
   settingsChanged = (settings: Settings): void => {
     const cellSizeChanged = (settings.cellSize !== this.state.settings.cellSize);
-    if (cellSizeChanged) {
-      this.updateCellSize(settings.cellSize);
+    const patternChanged = (settings.pattern !== this.state.settings.pattern);
+    if (cellSizeChanged || patternChanged) {
+      this.resetSimulation(settings.cellSize, settings.pattern);
     }
     else {
       this.setState({settings});
@@ -74,10 +77,10 @@ class App extends Component<AppProps, AppState> {
     }
   }
 
-  updateCellSize(cellSize: number): void {
-    const simulator = this.initSimulator(cellSize);
+  resetSimulation(cellSize: number, pattern: Pattern): void {
+    const simulator = this.initSimulator(cellSize, pattern);
     this.setState({
-      settings: { ...this.state.settings, cellSize },
+      settings: { ...this.state.settings, cellSize, pattern },
       generation: simulator.initialGeneration()
     });
     this.initNextGenStateUpdater(simulator, this.state.settings.speed);

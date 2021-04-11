@@ -1,9 +1,12 @@
 import {Component, h} from 'preact';
 import style from './style.css';
+import {Pattern} from "../../utils/simulator";
+import PatternDropdown from "../patternDropdown";
 
 export type Settings = {
   speed: number;
   cellSize: number;
+  pattern: Pattern;
 }
 
 type SettingsModalProps = {
@@ -30,17 +33,27 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
     this.props.onSettingsChanged({ ...this.props.settings, cellSize })
   };
 
+  onPatternChanged = (pattern: Pattern): void => {
+    this.props.onSettingsChanged({ ...this.props.settings, pattern })
+  };
+
   render() {
     return (
       <div class={style['modal-container']}>
         <div class={style['modal']}>
           <div class={style['heading']}>Settings</div>
           <div class={style['body']}>
+            <div className={style['field']} key="patternField">
+              <div className={style['field-label']}>Pattern:</div>
+              <div className={style['field-value']}>
+                <PatternDropdown value={this.props.settings.pattern} onChanged={this.onPatternChanged} />
+              </div>
+            </div>
             <div className={style['field']}>
               <div className={style['field-label']}>Speed: <span
                 className={style['field-value']}>{this.props.settings.speed}</span></div>
               <div className={style['field-value']}>
-                <input type="range" id="volume" name="volume" min="0" max="10" value={this.props.settings.speed}
+                <input type="range" min="0" max="10" value={this.props.settings.speed}
                        onInput={this.onSpeedChanged} />
               </div>
             </div>
@@ -48,7 +61,7 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
               <div className={style['field-label']}>Cell Size: <span
                 className={style['field-value']}>{this.props.settings.cellSize}</span></div>
               <div className={style['field-value']}>
-                <input type="range" id="volume" name="volume" min="10" max="100" step="5" value={this.props.settings.cellSize}
+                <input type="range" min="10" max="100" step="5" value={this.props.settings.cellSize}
                        onInput={this.onCellSizeChanged} />
               </div>
             </div>

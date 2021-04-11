@@ -1,6 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/camelcase
+export enum Pattern { Blinker, Glider, Lightweight_Spaceship }
+
 type SimulatorSettings = {
   numColumns: number;
   numRows: number;
+  pattern: Pattern;
 }
 
 export type Generation = {
@@ -9,16 +13,16 @@ export type Generation = {
 }
 
 const PATTERNS = {
-  blinker: [
+  [Pattern.Blinker]: [
     '   ',
     '***'
   ],
-  glider: [
+  [Pattern.Glider]: [
     '*  ',
     ' **',
     '** '
   ],
-  lightweightSpaceship: [
+  [Pattern.Lightweight_Spaceship]: [
     '*  * ',
     '    *',
     '*   *',
@@ -66,11 +70,7 @@ export class Simulator {
 
   private initialCellData(): number[] {
     const newCellData = new Array(this.settings.numColumns * this.settings.numRows).fill(0);
-
-    this.applyPattern(newCellData, PATTERNS['blinker']);
-    // this.applyPattern(newCellData, PATTERNS['glider']);
-    // this.applyPattern(newCellData, PATTERNS['lightweightSpaceship']);
-
+    this.applyPattern(newCellData, PATTERNS[this.settings.pattern]);
     return newCellData;
   }
 

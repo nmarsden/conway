@@ -1,0 +1,26 @@
+.button {
+	text-align: left;
+	height: 30px;
+	width: 175px;
+	background-color: white;
+	border: 1px solid white;
+	font-size: 16px;
+}
+
+.menu {
+	position: absolute;
+	background: white;
+	border: 1px solid white;
+}
+
+.menu-item {
+	background: black;
+	font-size: 20px;
+	padding: 4px;
+	cursor: pointer;
+}
+
+.menu-item:hover {
+	background: rgba(0, 0, 0, 0.8);
+	color: white;
+}
