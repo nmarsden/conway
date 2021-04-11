@@ -11,7 +11,7 @@ type PatternDropdownState = {
     isOpen: boolean;
 };
 
-const PATTERN_NAMES = Object.keys(Pattern).map(key => (Pattern as any)[key]).filter(value => typeof value === 'string') as string[];
+const PATTERN_NAMES = (Object.keys(Pattern).map(key => (Pattern as any)[key]).filter(value => typeof value === 'string') as string[]).sort();
 
 class PatternDropdown extends Component<PatternDropdownProps, PatternDropdownState> {
 
