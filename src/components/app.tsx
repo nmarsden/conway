@@ -7,8 +7,9 @@ import Board from './board';
 
 const DEFAULT_SETTINGS: Settings = {
   speed: 5,
-  cellSize: 20,
-  pattern: Pattern.Glider
+  cellSize: 50,
+  pattern: Pattern.Glider,
+  trailSize: 10
 }
 
 type AppProps = {};
@@ -31,12 +32,12 @@ class App extends Component<AppProps, AppState> {
   }
 
   init = (settings: Settings): void => {
-    const simulator = this.initSimulator(settings.cellSize, settings.pattern);
+    const simulator = this.initSimulator(settings.cellSize, settings.pattern, settings.trailSize);
     this.initAppState(settings, simulator);
     this.initNextGenStateUpdater(simulator, settings.speed);
   };
 
-  private initSimulator(cellSize: number, pattern: Pattern): Simulator {
+  private initSimulator(cellSize: number, pattern: Pattern, historySize: number): Simulator {
     const pageWidth = (document.documentElement.clientWidth || document.body.clientWidth);
     const pageHeight = (document.documentElement.clientHeight || document.body.clientHeight);
     const numColumns = Math.floor(pageWidth / cellSize);
@@ -45,7 +46,8 @@ class App extends Component<AppProps, AppState> {
     return new Simulator({
       numColumns,
       numRows,
-      pattern
+      pattern,
+      historySize
     });
   }
 
@@ -68,8 +70,10 @@ class App extends Component<AppProps, AppState> {
   settingsChanged = (settings: Settings): void => {
     const cellSizeChanged = (settings.cellSize !== this.state.settings.cellSize);
     const patternChanged = (settings.pattern !== this.state.settings.pattern);
-    if (cellSizeChanged || patternChanged) {
-      this.resetSimulation(settings.cellSize, settings.pattern);
+    const trailSizeChanged = (settings.trailSize !== this.state.settings.trailSize);
+
+    if (cellSizeChanged || patternChanged || trailSizeChanged) {
+      this.resetSimulation(settings.cellSize, settings.pattern, settings.trailSize);
     }
     else {
       this.setState({settings});
@@ -77,10 +81,10 @@ class App extends Component<AppProps, AppState> {
     }
   }
 
-  resetSimulation(cellSize: number, pattern: Pattern): void {
-    const simulator = this.initSimulator(cellSize, pattern);
+  resetSimulation(cellSize: number, pattern: Pattern, trailSize: number): void {
+    const simulator = this.initSimulator(cellSize, pattern, trailSize);
     this.setState({
-      settings: { ...this.state.settings, cellSize, pattern },
+      settings: { ...this.state.settings, cellSize, pattern, trailSize },
       generation: simulator.initialGeneration()
     });
     this.initNextGenStateUpdater(simulator, this.state.settings.speed);
@@ -103,8 +107,11 @@ class App extends Component<AppProps, AppState> {
     // console.log('App render! generation:', this.state.generation.num);
     return (
       <div id="app">
-        <Board cellData={this.state.generation.cellData} cellSize={this.state.settings.cellSize} />
-        { this.state.isSettingsModalOpen ? <SettingsModal settings={this.state.settings} onSettingsChanged={this.settingsChanged} /> : '' }
+        <Board cellData={this.state.generation.cellData}
+               maxActive={this.state.settings.trailSize + 1}
+               cellSize={this.state.settings.cellSize} />
+        { this.state.isSettingsModalOpen ? <SettingsModal settings={this.state.settings}
+                                                          onSettingsChanged={this.settingsChanged} /> : '' }
         <SettingsButton onClicked={this.settingsButtonClicked} />
       </div>
     );

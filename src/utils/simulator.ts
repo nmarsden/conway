@@ -5,6 +5,7 @@ type SimulatorSettings = {
   numColumns: number;
   numRows: number;
   pattern: Pattern;
+  historySize: number;
 }
 
 export type Generation = {
@@ -90,16 +91,29 @@ const PATTERNS = {
 export class Simulator {
   private settings: SimulatorSettings;
   private generation: Generation;
+  private generations: Generation[];
 
   constructor(settings: SimulatorSettings) {
     this.settings = settings;
     this.generation = { num: 0, cellData: [] };
+    this.generations = [];
   }
 
   initialGeneration(): Generation {
     this.generation = { num: 1, cellData: this.initialCellData() };
+    this.generations.push({...this.generation});
     return { ...this.generation };
   }
+
+  // private logCellData(cellData: number[]): void {
+  //   for (let row=0; row<this.settings.numRows; row++) {
+  //     let rowData = '';
+  //     for (let col=0; col<this.settings.numColumns; col++) {
+  //       rowData = `${rowData + cellData[this.toIndex(col, row)].toString()  } `;
+  //     }
+  //     console.log(rowData);
+  //   }
+  // }
 
   nextGeneration(): Generation {
     const updatedCellData = [...this.generation.cellData];
@@ -109,7 +123,49 @@ export class Simulator {
       }
     }
     this.generation = { num: this.generation.num + 1, cellData: updatedCellData };
-    return { ...this.generation };
+
+    // DEBUG
+    // console.log(`=== cellData (${this.generation.num}) ===`);
+    // this.logCellData(this.generation.cellData);
+
+    // Track history
+    this.generations.unshift({...this.generation});
+    if (this.generations.length > (this.settings.historySize + 1)) {
+      this.generations.pop();
+    }
+
+    // console.log(`=== ***** GENERATIONS ***** ===`);
+    // for (let i=0; i<this.generations.length; i++) {
+    //   console.log(`=== generation (${i}) ===`);
+    //   this.logCellData(this.generations[i].cellData);
+    // }
+
+    // combine generations
+    // age |
+    // =====================
+    // 0   | 0 0 0 0 1 1 1 1
+    // 1   | 0 0 1 1 0 0 1 1
+    // 2   | 0 1 0 1 0 1 0 1
+    // =====================
+    //     | 0 1 2 1 3 1 2 1
+
+    // Combine history
+    let combinedCellData = {...this.generations[0].cellData};
+    for (let age=1; age<this.generations.length; age++) {
+      combinedCellData = this.generations[age].cellData.map((n, index) => {
+        return (combinedCellData[index] === 0 && n === 1) ? (age+1) : combinedCellData[index];
+      });
+    }
+
+    // DEBUG
+    // console.log(`=== combinedCellData (${this.generation.num}) ===`);
+    // this.logCellData(combinedCellData);
+
+    return {
+      num: this.generations[0].num,
+      cellData: combinedCellData
+    }
+    // return { ...this.generation };
   }
 
   private applyPattern(cellDataToUpdate: number[], pattern: string[]): void {

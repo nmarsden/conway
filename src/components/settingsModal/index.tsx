@@ -7,6 +7,7 @@ export type Settings = {
   speed: number;
   cellSize: number;
   pattern: Pattern;
+  trailSize: number;
 }
 
 type SettingsModalProps = {
@@ -31,6 +32,11 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
   onCellSizeChanged = (event: Event): void => {
     const cellSize: number = parseInt((event.target as HTMLInputElement).value, 10);
     this.props.onSettingsChanged({ ...this.props.settings, cellSize })
+  };
+
+  onTrailSizeChanged = (event: Event): void => {
+    const trailSize: number = parseInt((event.target as HTMLInputElement).value, 10);
+    this.props.onSettingsChanged({ ...this.props.settings, trailSize })
   };
 
   onPatternChanged = (pattern: Pattern): void => {
@@ -63,6 +69,14 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
               <div className={style['field-value']}>
                 <input type="range" min="10" max="100" step="5" value={this.props.settings.cellSize}
                        onInput={this.onCellSizeChanged} />
+              </div>
+            </div>
+            <div className={style['field']}>
+              <div className={style['field-label']}>Trail: <span
+                className={style['field-value']}>{this.props.settings.trailSize}</span></div>
+              <div className={style['field-value']}>
+                <input type="range" min="0" max="20" value={this.props.settings.trailSize}
+                       onInput={this.onTrailSizeChanged} />
               </div>
             </div>
           </div>

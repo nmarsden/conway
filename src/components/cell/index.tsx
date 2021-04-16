@@ -1,11 +1,16 @@
 import {FunctionalComponent, h} from 'preact';
 import style from './style.css';
-import classNames from "classnames";
 
-const Cell: FunctionalComponent<{ size: number; isActive: boolean }> = ({ size=30, isActive}) => {
-    const sizeStyles = `width:${size}px; height:${size}px;`;
+const backgroundColor = (active: number, maxActive: number): string => {
+    const alpha = active === 1 ? 1 : (0.1 + (0.5 * (1 - (active / maxActive))));
+    return active === 0 ? 'transparent' : `rgba(17, 101, 222, ${alpha.toFixed(3)})`;
+}
+
+const Cell: FunctionalComponent<{ size: number; active: number; maxActive: number }>
+  = ({ size=30, active, maxActive}) => {
+    const styles = `width:${size}px; height:${size}px; background-color:${backgroundColor(active, maxActive)};`;
     return (
-      <div style={sizeStyles} class={classNames(style.cell, {[style.active]: isActive})} />
+      <div style={styles} className={style['cell']} />
     );
 };
 

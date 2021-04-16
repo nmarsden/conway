@@ -2,10 +2,11 @@ import { FunctionalComponent, h, JSX } from 'preact';
 import style from './style.css';
 import Cell from "../cell";
 
-const Board: FunctionalComponent<{ cellData: number[]; cellSize: number }> = ({ cellData, cellSize=30 }) => {
+const Board: FunctionalComponent<{ cellData: number[]; maxActive: number; cellSize: number }>
+  = ({ cellData, maxActive, cellSize=30 }) => {
 
   const cells = (): JSX.Element[] => {
-    return cellData.map(d => <Cell isActive={d === 1} size={cellSize} />);
+    return cellData.map(n => <Cell active={n} maxActive={maxActive} size={cellSize} />);
   };
 
   return (
