@@ -150,7 +150,7 @@ export class Simulator {
     //     | 0 1 2 1 3 1 2 1
 
     // Combine history
-    let combinedCellData = {...this.generations[0].cellData};
+    let combinedCellData = [...this.generations[0].cellData];
     for (let age=1; age<this.generations.length; age++) {
       combinedCellData = this.generations[age].cellData.map((n, index) => {
         return (combinedCellData[index] === 0 && n === 1) ? (age+1) : combinedCellData[index];

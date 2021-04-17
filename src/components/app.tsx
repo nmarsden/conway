@@ -6,10 +6,10 @@ import SettingsButton from "./settingsButton";
 import Board from './board';
 
 const DEFAULT_SETTINGS: Settings = {
-  speed: 5,
-  cellSize: 50,
+  speed: 10,
+  cellSize: 20,
   pattern: Pattern.Glider,
-  trailSize: 10
+  trailSize: 20
 }
 
 type AppProps = {};
