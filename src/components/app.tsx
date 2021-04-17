@@ -32,12 +32,12 @@ class App extends Component<AppProps, AppState> {
   }
 
   init = (settings: Settings): void => {
-    const simulator = this.initSimulator(settings.cellSize, settings.pattern, settings.trailSize);
+    const simulator = this.initSimulator(settings.cellSize, settings.pattern);
     this.initAppState(settings, simulator);
-    this.initNextGenStateUpdater(simulator, settings.speed);
+    this.initNextGenStateUpdater(simulator, settings.speed, settings.trailSize);
   };
 
-  private initSimulator(cellSize: number, pattern: Pattern, historySize: number): Simulator {
+  private initSimulator(cellSize: number, pattern: Pattern): Simulator {
     const pageWidth = (document.documentElement.clientWidth || document.body.clientWidth);
     const pageHeight = (document.documentElement.clientHeight || document.body.clientHeight);
     const numColumns = Math.floor(pageWidth / cellSize);
@@ -46,8 +46,7 @@ class App extends Component<AppProps, AppState> {
     return new Simulator({
       numColumns,
       numRows,
-      pattern,
-      historySize
+      pattern
     });
   }
 
@@ -59,35 +58,35 @@ class App extends Component<AppProps, AppState> {
     };
   }
 
-  private initNextGenStateUpdater(simulator: Simulator, speed: number): void {
+  private initNextGenStateUpdater(simulator: Simulator, speed: number, trailSize: number): void {
     if (nextGenStateUpdater) {
       nextGenStateUpdater.stop();
     }
-    nextGenStateUpdater = new NextGenStateUpdater(this, simulator, speed);
+    nextGenStateUpdater = new NextGenStateUpdater(this, simulator, speed, trailSize);
     nextGenStateUpdater.start();
   }
 
   settingsChanged = (settings: Settings): void => {
     const cellSizeChanged = (settings.cellSize !== this.state.settings.cellSize);
     const patternChanged = (settings.pattern !== this.state.settings.pattern);
-    const trailSizeChanged = (settings.trailSize !== this.state.settings.trailSize);
 
-    if (cellSizeChanged || patternChanged || trailSizeChanged) {
-      this.resetSimulation(settings.cellSize, settings.pattern, settings.trailSize);
+    if (cellSizeChanged || patternChanged) {
+      this.resetSimulation(settings.cellSize, settings.pattern);
     }
     else {
       this.setState({settings});
       nextGenStateUpdater.setSpeed(settings.speed);
+      nextGenStateUpdater.setTrailSize(settings.trailSize);
     }
   }
 
-  resetSimulation(cellSize: number, pattern: Pattern, trailSize: number): void {
-    const simulator = this.initSimulator(cellSize, pattern, trailSize);
+  resetSimulation(cellSize: number, pattern: Pattern): void {
+    const simulator = this.initSimulator(cellSize, pattern);
     this.setState({
-      settings: { ...this.state.settings, cellSize, pattern, trailSize },
+      settings: { ...this.state.settings, cellSize, pattern },
       generation: simulator.initialGeneration()
     });
-    this.initNextGenStateUpdater(simulator, this.state.settings.speed);
+    this.initNextGenStateUpdater(simulator, this.state.settings.speed, this.state.settings.trailSize);
   }
 
   settingsButtonClicked = (): void => {

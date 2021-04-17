@@ -19,7 +19,7 @@ describe('Simulator', () => {
     let simulator: Simulator;
 
     beforeEach(() => {
-      simulator = new Simulator({numColumns: NUM_COLUMNS, numRows: NUM_ROWS, historySize: 0, pattern: PATTERN});
+      simulator = new Simulator({numColumns: NUM_COLUMNS, numRows: NUM_ROWS, pattern: PATTERN});
     });
 
     test('should simulate gen 1', () => {
@@ -35,7 +35,7 @@ describe('Simulator', () => {
 
     test('should simulate gen 2', () => {
       simulator.initialGeneration();
-      expect(cellDataToString(simulator.nextGeneration().cellData)).toEqual([
+      expect(cellDataToString(simulator.nextGeneration(0).cellData)).toEqual([
         '______',
         '__1___',
         '___1__',
@@ -47,8 +47,8 @@ describe('Simulator', () => {
 
     test('should simulate gen 3', () => {
       simulator.initialGeneration();
-      simulator.nextGeneration()
-      expect(cellDataToString(simulator.nextGeneration().cellData)).toEqual([
+      simulator.nextGeneration(0)
+      expect(cellDataToString(simulator.nextGeneration(0).cellData)).toEqual([
         '______',
         '______',
         '_1_1__',
@@ -63,23 +63,12 @@ describe('Simulator', () => {
     let simulator: Simulator;
 
     beforeEach(() => {
-      simulator = new Simulator({numColumns: NUM_COLUMNS, numRows: NUM_ROWS, historySize: 2, pattern: PATTERN});
-    });
-
-    test('should simulate gen 1', () => {
-      expect(cellDataToString(simulator.initialGeneration().cellData)).toEqual([
-        '______',
-        '_1____',
-        '__11__',
-        '_11___',
-        '______',
-        '______',
-      ]);
+      simulator = new Simulator({numColumns: NUM_COLUMNS, numRows: NUM_ROWS, pattern: PATTERN});
     });
 
     test('should simulate gen 2', () => {
       simulator.initialGeneration();
-      expect(cellDataToString(simulator.nextGeneration().cellData)).toEqual([
+      expect(cellDataToString(simulator.nextGeneration(2).cellData)).toEqual([
         '______',
         '_21___',
         '__21__',
@@ -91,8 +80,8 @@ describe('Simulator', () => {
 
     test('should simulate gen 3', () => {
       simulator.initialGeneration();
-      simulator.nextGeneration()
-      expect(cellDataToString(simulator.nextGeneration().cellData)).toEqual([
+      simulator.nextGeneration(2)
+      expect(cellDataToString(simulator.nextGeneration(2).cellData)).toEqual([
         '______',
         '_32___',
         '_131__',

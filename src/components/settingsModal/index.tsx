@@ -71,7 +71,7 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
               <div className={style['field-label']}>Trail: <span
                 className={style['field-value']}>{this.props.settings.trailSize}</span></div>
               <div className={style['field-value']}>
-                <input type="range" min="0" max="20" value={this.props.settings.trailSize}
+                <input type="range" min="0" max="40" value={this.props.settings.trailSize}
                        onInput={this.onTrailSizeChanged} />
               </div>
             </div>

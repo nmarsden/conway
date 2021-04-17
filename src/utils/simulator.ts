@@ -5,7 +5,6 @@ type SimulatorSettings = {
   numColumns: number;
   numRows: number;
   pattern: Pattern;
-  historySize: number;
 }
 
 export type Generation = {
@@ -91,81 +90,44 @@ const PATTERNS = {
 export class Simulator {
   private settings: SimulatorSettings;
   private generation: Generation;
-  private generations: Generation[];
 
   constructor(settings: SimulatorSettings) {
     this.settings = settings;
     this.generation = { num: 0, cellData: [] };
-    this.generations = [];
   }
 
   initialGeneration(): Generation {
     this.generation = { num: 1, cellData: this.initialCellData() };
-    this.generations.push({...this.generation});
     return { ...this.generation };
   }
 
-  // private logCellData(cellData: number[]): void {
-  //   for (let row=0; row<this.settings.numRows; row++) {
-  //     let rowData = '';
-  //     for (let col=0; col<this.settings.numColumns; col++) {
-  //       rowData = `${rowData + cellData[this.toIndex(col, row)].toString()  } `;
-  //     }
-  //     console.log(rowData);
-  //   }
-  // }
+  private getCurrentGenCellDataWithoutHistory(): number[]  {
+    return this.generation.cellData.map(c => c === this.generation.num ? 1 : 0);
+  }
 
-  nextGeneration(): Generation {
-    const updatedCellData = [...this.generation.cellData];
+  private getCurrentGenCellDataWithHistory(historySize: number): number[]  {
+    const genCutoff = Math.max(0, this.generation.num - historySize - 1);
+
+    return this.generation.cellData.map(c => c > genCutoff ? (this.generation.num - c + 1) : 0);
+  }
+
+  nextGeneration(historySize: number): Generation {
+    const currentGenCellData = this.getCurrentGenCellDataWithoutHistory();
+    const nextGenCellData = [...currentGenCellData];
     for(let col=0; col<this.settings.numColumns; col++) {
       for(let row=0; row<this.settings.numRows; row++) {
-        updatedCellData[this.toIndex(col, row)] = (this.isActive(col, row) ? 1 : 0);
+        nextGenCellData[this.toIndex(col, row)] = (this.isActive(currentGenCellData, col, row) ? 1 : 0);
       }
     }
-    this.generation = { num: this.generation.num + 1, cellData: updatedCellData };
-
-    // DEBUG
-    // console.log(`=== cellData (${this.generation.num}) ===`);
-    // this.logCellData(this.generation.cellData);
-
-    // Track history
-    this.generations.unshift({...this.generation});
-    if (this.generations.length > (this.settings.historySize + 1)) {
-      this.generations.pop();
-    }
-
-    // console.log(`=== ***** GENERATIONS ***** ===`);
-    // for (let i=0; i<this.generations.length; i++) {
-    //   console.log(`=== generation (${i}) ===`);
-    //   this.logCellData(this.generations[i].cellData);
-    // }
-
-    // combine generations
-    // age |
-    // =====================
-    // 0   | 0 0 0 0 1 1 1 1
-    // 1   | 0 0 1 1 0 0 1 1
-    // 2   | 0 1 0 1 0 1 0 1
-    // =====================
-    //     | 0 1 2 1 3 1 2 1
-
-    // Combine history
-    let combinedCellData = [...this.generations[0].cellData];
-    for (let age=1; age<this.generations.length; age++) {
-      combinedCellData = this.generations[age].cellData.map((n, index) => {
-        return (combinedCellData[index] === 0 && n === 1) ? (age+1) : combinedCellData[index];
-      });
-    }
-
-    // DEBUG
-    // console.log(`=== combinedCellData (${this.generation.num}) ===`);
-    // this.logCellData(combinedCellData);
-
+    const nextGenNum = this.generation.num + 1;
+    this.generation = {
+      num: nextGenNum,
+      cellData: this.generation.cellData.map((c, i) => nextGenCellData[i] === 1 ? nextGenNum : c)
+    };
     return {
-      num: this.generations[0].num,
-      cellData: combinedCellData
+      num: nextGenNum,
+      cellData: this.getCurrentGenCellDataWithHistory(historySize)
     }
-    // return { ...this.generation };
   }
 
   private applyPattern(cellDataToUpdate: number[], pattern: string[]): void {
@@ -193,28 +155,28 @@ export class Simulator {
     return (this.settings.numColumns * r) + c;
   }
 
-  private cellValue(col: number, row: number): number {
-    return this.generation.cellData[this.toIndex(col, row)];
+  private cellValue(cellData: number[], col: number, row: number): number {
+    return cellData[this.toIndex(col, row)];
   }
 
-  private activeNeighbourCount(col: number, row: number): number {
+  private activeNeighbourCount(cellData: number[], col: number, row: number): number {
     let count = 0;
-    count += this.cellValue(col - 1, row - 1);
-    count += this.cellValue(col, row - 1);
-    count += this.cellValue(col + 1, row - 1);
+    count += this.cellValue(cellData,col - 1, row - 1);
+    count += this.cellValue(cellData,col, row - 1);
+    count += this.cellValue(cellData,col + 1, row - 1);
 
-    count += this.cellValue(col - 1, row);
-    count += this.cellValue(col + 1, row);
+    count += this.cellValue(cellData,col - 1, row);
+    count += this.cellValue(cellData,col + 1, row);
 
-    count += this.cellValue(col - 1, row + 1);
-    count += this.cellValue(col, row + 1);
-    count += this.cellValue(col + 1, row + 1);
+    count += this.cellValue(cellData,col - 1, row + 1);
+    count += this.cellValue(cellData,col, row + 1);
+    count += this.cellValue(cellData,col + 1, row + 1);
     return count;
   }
 
-  private isActive(col: number, row: number): boolean {
-    const neighbourCount = this.activeNeighbourCount(col, row);
-    if (this.cellValue(col,row) === 1) {
+  private isActive(cellData: number[], col: number, row: number): boolean {
+    const neighbourCount = this.activeNeighbourCount(cellData,col, row);
+    if (this.cellValue(cellData,col,row) === 1) {
       return (neighbourCount === 2 || neighbourCount === 3);
     }
     return (neighbourCount === 3);
