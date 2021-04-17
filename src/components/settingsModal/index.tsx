@@ -20,10 +20,6 @@ type SettingsModalState = {
 
 class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
 
-  constructor(props: SettingsModalProps) {
-    super(props);
-  }
-
   onSpeedChanged = (event: Event): void => {
     const speed: number = parseInt((event.target as HTMLInputElement).value, 10);
     this.props.onSettingsChanged({ ...this.props.settings, speed })
@@ -43,7 +39,7 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
     this.props.onSettingsChanged({ ...this.props.settings, pattern })
   };
 
-  render() {
+  render(): JSX.Element {
     return (
       <div class={style['modal-container']}>
         <div class={style['modal']}>

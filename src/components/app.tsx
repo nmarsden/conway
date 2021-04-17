@@ -94,16 +94,16 @@ class App extends Component<AppProps, AppState> {
     this.setState( { isSettingsModalOpen: !this.state.isSettingsModalOpen });
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     console.log('App Did Mount!');
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     console.log('App Will Unmount!');
     nextGenStateUpdater.stop();
   }
 
-  render() {
+  render(): JSX.Element {
     // console.log('App render! generation:', this.state.generation.num);
     return (
       <div id="app">

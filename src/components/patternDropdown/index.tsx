@@ -11,6 +11,7 @@ type PatternDropdownState = {
     isOpen: boolean;
 };
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 const PATTERN_NAMES = (Object.keys(Pattern).map(key => (Pattern as any)[key]).filter(value => typeof value === 'string') as string[]).sort();
 
 class PatternDropdown extends Component<PatternDropdownProps, PatternDropdownState> {
@@ -33,7 +34,7 @@ class PatternDropdown extends Component<PatternDropdownProps, PatternDropdownSta
     private patternSelectedHandler = (pattern: string): () => void => {
         return (): void => {
             this.setState({ isOpen: false });
-            this.props.onChanged((Pattern as any)[pattern]);
+            this.props.onChanged((Pattern as never)[pattern]);
         }
     }
 
@@ -41,7 +42,7 @@ class PatternDropdown extends Component<PatternDropdownProps, PatternDropdownSta
         return pattern.replace(/_/g, ' ');
     }
 
-    render() {
+    render(): JSX.Element {
         return (
           <div>
               <button className={style['button']}

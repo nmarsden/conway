@@ -10,15 +10,11 @@ type SettingsButtonState = {
 
 class SettingsButton extends Component<SettingsButtonProps, SettingsButtonState> {
 
-    constructor(props: SettingsButtonProps) {
-        super(props);
-    }
-
     onButtonClicked = (): void => {
         this.props.onClicked();
     };
 
-    render() {
+    render(): JSX.Element {
         return (
           <button class={style['button']} onClick={this.onButtonClicked} />
         );
