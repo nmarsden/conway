@@ -155,11 +155,13 @@ export class Simulator {
   private applyPatternData(cellDataToUpdate: number[], patternData: string[]): void {
     const patternWidth = patternData[0].length;
     const patternHeight = patternData.length;
+    const patternColOffset = Math.floor((this.settings.numColumns - patternWidth) / 2);
+    const patternRowOffset = Math.floor((this.settings.numRows - patternHeight) / 2);
 
     for (let col=0; col<patternWidth; col++) {
       for (let row=0; row<patternHeight; row++) {
         if (patternData[row].split('')[col] === '*') {
-          cellDataToUpdate[this.toIndex(col, row)] = 1;
+          cellDataToUpdate[this.toIndex(patternColOffset + col, patternRowOffset + row)] = 1;
         }
       }
     }
@@ -180,9 +182,8 @@ export class Simulator {
   private getPatternData(pattern: Pattern): string[] {
     if (pattern === Pattern.Random) {
       return this.generateRandomPatternData();
-    } else {
-      return PATTERN_DATA[pattern];
     }
+    return PATTERN_DATA[pattern];
   }
 
   private initialCellData(): number[] {
