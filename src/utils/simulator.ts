@@ -1,6 +1,15 @@
 // eslint-disable-next-line @typescript-eslint/camelcase
 export enum Pattern { Blinker, Pulsar, Glider, Lightweight_Spaceship, Gosper_Glider_Gun, Flotilla, Random, R_Pentomino, Queen_Bee }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export const SORTED_PATTERN_NAMES = (Object.keys(Pattern).map(key => (Pattern as any)[key]).filter(value => typeof value === 'string') as string[]).sort();
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+const PATTERN_NAMES = (Object.keys(Pattern).map(key => (Pattern as any)[key]).filter(value => typeof value === 'string') as string[]);
+
+export const getPatternDisplayName = (pattern: Pattern): string => {
+  return PATTERN_NAMES[pattern].replace(/_/g, ' ');
+}
+
 type SimulatorSettings = {
   numColumns: number;
   numRows: number;

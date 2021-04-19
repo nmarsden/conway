@@ -1,6 +1,6 @@
 import {Component, h} from 'preact';
 import style from './style.css';
-import {Pattern} from "../../utils/simulator";
+import {Pattern, SORTED_PATTERN_NAMES} from "../../utils/simulator";
 
 type PatternDropdownProps = {
     value: Pattern;
@@ -10,9 +10,6 @@ type PatternDropdownProps = {
 type PatternDropdownState = {
     isOpen: boolean;
 };
-
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-const PATTERN_NAMES = (Object.keys(Pattern).map(key => (Pattern as any)[key]).filter(value => typeof value === 'string') as string[]).sort();
 
 class PatternDropdown extends Component<PatternDropdownProps, PatternDropdownState> {
 
@@ -52,7 +49,7 @@ class PatternDropdown extends Component<PatternDropdownProps, PatternDropdownSta
               </button>
               {this.state.isOpen ? (
               <div className={style['menu']}>
-                { PATTERN_NAMES.map( patternName => (
+                { SORTED_PATTERN_NAMES.map( patternName => (
                   <div className={style['menu-item']} onMouseDown={this.patternSelectedHandler(patternName)}>{this.patternDisplayName(patternName)}</div>
                 ))}
               </div>) : ''}

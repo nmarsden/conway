@@ -3,6 +3,7 @@ import {Generation, Pattern, Simulator} from "../utils/simulator";
 import {NextGenStateUpdater} from "../utils/nextGenStateUpdater";
 import SettingsModal, {Settings} from "./settingsModal";
 import SettingsButton from "./settingsButton";
+import Info from "./info";
 import Board from './board';
 
 const DEFAULT_SETTINGS: Settings = {
@@ -127,6 +128,9 @@ class App extends Component<AppProps, AppState> {
     // console.log('App render! generation:', this.state.generation.num);
     return (
       <div id="app">
+        <Info pattern={this.state.settings.pattern}
+              generationNum={this.state.generation.num}
+        />
         <Board numColumns={this.state.numColumns}
                numRows={this.state.numRows}
                cellData={this.state.generation.cellData}

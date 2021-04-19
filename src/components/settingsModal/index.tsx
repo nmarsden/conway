@@ -15,28 +15,27 @@ type SettingsModalProps = {
   onSettingsChanged: (settings: Settings) => void;
 };
 
-type SettingsModalState = {
-};
+type SettingsModalState = {};
 
 class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
 
   onSpeedChanged = (event: Event): void => {
     const speed: number = parseInt((event.target as HTMLInputElement).value, 10);
-    this.props.onSettingsChanged({ ...this.props.settings, speed })
+    this.props.onSettingsChanged({...this.props.settings, speed})
   };
 
   onCellSizeChanged = (event: Event): void => {
     const cellSize: number = parseInt((event.target as HTMLInputElement).value, 10);
-    this.props.onSettingsChanged({ ...this.props.settings, cellSize })
+    this.props.onSettingsChanged({...this.props.settings, cellSize})
   };
 
   onTrailSizeChanged = (event: Event): void => {
     const trailSize: number = parseInt((event.target as HTMLInputElement).value, 10);
-    this.props.onSettingsChanged({ ...this.props.settings, trailSize })
+    this.props.onSettingsChanged({...this.props.settings, trailSize})
   };
 
   onPatternChanged = (pattern: Pattern): void => {
-    this.props.onSettingsChanged({ ...this.props.settings, pattern })
+    this.props.onSettingsChanged({...this.props.settings, pattern})
   };
 
   render(): JSX.Element {
