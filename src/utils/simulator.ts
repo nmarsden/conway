@@ -96,6 +96,10 @@ export class Simulator {
     this.generation = { num: 0, cellData: [] };
   }
 
+  getSettings(): SimulatorSettings {
+    return {...this.settings};
+  }
+
   initialGeneration(): Generation {
     this.generation = { num: 1, cellData: this.initialCellData() };
     return { ...this.generation };

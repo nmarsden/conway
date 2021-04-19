@@ -18,6 +18,8 @@ type AppState = {
   settings: Settings;
   generation: Generation;
   isSettingsModalOpen: boolean;
+  numColumns: number;
+  numRows: number;
 };
 
 let nextGenStateUpdater: NextGenStateUpdater;
@@ -27,13 +29,19 @@ class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     console.log('App constructor!');
-    window.addEventListener("resize", () => this.init(this.state.settings));
-    this.init(DEFAULT_SETTINGS);
+    window.addEventListener("resize", () => this.updateSettings(this.state.settings));
+    this.initSettings(DEFAULT_SETTINGS);
   }
 
-  init = (settings: Settings): void => {
+  initSettings = (settings: Settings): void => {
     const simulator = this.initSimulator(settings.cellSize, settings.pattern);
     this.initAppState(settings, simulator);
+    this.initNextGenStateUpdater(simulator, settings.speed, settings.trailSize);
+  };
+
+  updateSettings = (settings: Settings): void => {
+    const simulator = this.initSimulator(settings.cellSize, settings.pattern);
+    this.updateAppState(settings, simulator);
     this.initNextGenStateUpdater(simulator, settings.speed, settings.trailSize);
   };
 
@@ -54,8 +62,19 @@ class App extends Component<AppProps, AppState> {
     this.state = {
       settings,
       generation: simulator.initialGeneration(),
-      isSettingsModalOpen: false
+      isSettingsModalOpen: false,
+      numColumns: simulator.getSettings().numColumns,
+      numRows: simulator.getSettings().numRows
     };
+  }
+
+  private updateAppState(settings: Settings, simulator: Simulator): void {
+    this.setState({
+      settings,
+      generation: simulator.initialGeneration(),
+      numColumns: simulator.getSettings().numColumns,
+      numRows: simulator.getSettings().numRows
+    });
   }
 
   private initNextGenStateUpdater(simulator: Simulator, speed: number, trailSize: number): void {
@@ -84,7 +103,9 @@ class App extends Component<AppProps, AppState> {
     const simulator = this.initSimulator(cellSize, pattern);
     this.setState({
       settings: { ...this.state.settings, cellSize, pattern },
-      generation: simulator.initialGeneration()
+      generation: simulator.initialGeneration(),
+      numColumns: simulator.getSettings().numColumns,
+      numRows: simulator.getSettings().numRows
     });
     this.initNextGenStateUpdater(simulator, this.state.settings.speed, this.state.settings.trailSize);
   }
@@ -106,9 +127,12 @@ class App extends Component<AppProps, AppState> {
     // console.log('App render! generation:', this.state.generation.num);
     return (
       <div id="app">
-        <Board cellData={this.state.generation.cellData}
+        <Board numColumns={this.state.numColumns}
+               numRows={this.state.numRows}
+               cellData={this.state.generation.cellData}
                maxActive={this.state.settings.trailSize + 1}
-               cellSize={this.state.settings.cellSize} />
+               cellSize={this.state.settings.cellSize}
+        />
         { this.state.isSettingsModalOpen ? <SettingsModal settings={this.state.settings}
                                                           onSettingsChanged={this.settingsChanged} /> : '' }
         <SettingsButton onClicked={this.settingsButtonClicked} />
