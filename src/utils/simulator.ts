@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/camelcase
-export enum Pattern { Blinker, Pulsar, Glider, Lightweight_Spaceship, Gosper_Glider_Gun, Flotilla }
+export enum Pattern { Blinker, Pulsar, Glider, Lightweight_Spaceship, Gosper_Glider_Gun, Flotilla, Random }
 
 type SimulatorSettings = {
   numColumns: number;
@@ -12,7 +12,7 @@ export type Generation = {
   cellData: number[];
 }
 
-const PATTERNS = {
+const PATTERN_DATA = {
   [Pattern.Blinker]: [
     '     ',
     '  *  ',
@@ -134,22 +134,42 @@ export class Simulator {
     }
   }
 
-  private applyPattern(cellDataToUpdate: number[], pattern: string[]): void {
-    const patternWidth = pattern[0].length;
-    const patternHeight = pattern.length;
+  private applyPatternData(cellDataToUpdate: number[], patternData: string[]): void {
+    const patternWidth = patternData[0].length;
+    const patternHeight = patternData.length;
 
     for (let col=0; col<patternWidth; col++) {
       for (let row=0; row<patternHeight; row++) {
-        if (pattern[row].split('')[col] === '*') {
+        if (patternData[row].split('')[col] === '*') {
           cellDataToUpdate[this.toIndex(col, row)] = 1;
         }
       }
     }
   }
 
+  private generateRandomPatternData(): string[] {
+    const patternStrings: string[] = [];
+    for (let row = 0; row < this.settings.numRows; row++) {
+      let patternRow = '';
+      for (let col=0; col < this.settings.numColumns; col++) {
+        patternRow += (Math.random() > 0.8) ? '*' : ' ';
+      }
+      patternStrings.push(patternRow);
+    }
+    return patternStrings;
+  }
+
+  private getPatternData(pattern: Pattern): string[] {
+    if (pattern === Pattern.Random) {
+      return this.generateRandomPatternData();
+    } else {
+      return PATTERN_DATA[pattern];
+    }
+  }
+
   private initialCellData(): number[] {
     const newCellData = new Array(this.settings.numColumns * this.settings.numRows).fill(0);
-    this.applyPattern(newCellData, PATTERNS[this.settings.pattern]);
+    this.applyPatternData(newCellData, this.getPatternData(this.settings.pattern));
     return newCellData;
   }
 
