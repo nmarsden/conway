@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/camelcase
-export enum Pattern { Blinker, Pulsar, Glider, Lightweight_Spaceship, Gosper_Glider_Gun, Flotilla, Random }
+export enum Pattern { Blinker, Pulsar, Glider, Lightweight_Spaceship, Gosper_Glider_Gun, Flotilla, Random, R_Pentomino, Queen_Bee }
 
 type SimulatorSettings = {
   numColumns: number;
@@ -84,6 +84,24 @@ const PATTERN_DATA = {
     '   ** ****       ',
     '    **           ',
     '                 '
+  ],
+  [Pattern.R_Pentomino]: [
+    '     ',
+    '  ** ',
+    ' **  ',
+    '  *  ',
+    '     '
+  ],
+  [Pattern.Queen_Bee]: [
+    '       ',
+    ' *     ',
+    ' * *   ',
+    '  * *  ',
+    '  *  * ',
+    '  * *  ',
+    ' * *   ',
+    ' *     ',
+    '       '
   ]
 }
 
