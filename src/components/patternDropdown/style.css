@@ -1,26 +1,41 @@
 .button {
 	text-align: left;
 	height: 30px;
-	width: 175px;
+	width: 191px;
 	background-color: white;
 	border: 1px solid white;
 	font-size: 16px;
+}
+
+.menu-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
 }
 
 .menu {
 	position: absolute;
 	background: white;
 	border: 1px solid white;
+	max-height: 145px;
+	overflow-y: scroll;
 }
 
 .menu-item {
 	background: black;
 	font-size: 20px;
-	padding: 4px;
+	padding: 4px 10px;
 	cursor: pointer;
 }
 
 .menu-item:hover {
 	background: rgba(0, 0, 0, 0.8);
 	color: white;
+}
+
+.menu-item-selected {
+	background: white;
+	color: black;
 }

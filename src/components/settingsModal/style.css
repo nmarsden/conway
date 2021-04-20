@@ -27,7 +27,7 @@
 .heading {
 	font-size: 26px;
 	font-weight: bold;
-	color: rgb(168,196,236);
+	color: hsl(157, 71%, 60%);
 	margin-top: 20px;
 	text-align: center;
 	text-transform: uppercase;
@@ -47,9 +47,9 @@
 	font-size: 22px;
 	display: flex;
 	flex-direction: column;
-	width: 180px;
+	width: 191px;
 	height: 70px;
-	margin: 0 5px;
+	margin: 0 18px;
 }
 
 .field-label {
@@ -59,6 +59,10 @@
 
 .field-value {
 	font-weight: bold;
-	color: rgb(168,196,236);
+	color: hsl(157, 71%, 60%);
 	margin-bottom: 10px;
+}
+
+.field-value input {
+	width: 191px;
 }

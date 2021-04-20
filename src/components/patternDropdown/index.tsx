@@ -1,6 +1,7 @@
 import {Component, h} from 'preact';
 import style from './style.css';
 import {Pattern, SORTED_PATTERN_NAMES} from "../../utils/simulator";
+import classNames from "classnames";
 
 type PatternDropdownProps = {
     value: Pattern;
@@ -8,6 +9,7 @@ type PatternDropdownProps = {
 };
 
 type PatternDropdownState = {
+    menuPos: { top: number; left: number };
     isOpen: boolean;
 };
 
@@ -16,21 +18,26 @@ class PatternDropdown extends Component<PatternDropdownProps, PatternDropdownSta
     constructor(props: PatternDropdownProps) {
         super(props);
         this.state = {
+            menuPos: { top: 0, left: 0 },
             isOpen: false
         }
     }
 
-    private onButtonClicked = (): void => {
-        this.setState({ isOpen: !this.state.isOpen})
+    private onButtonClicked = (event: any): void => {
+        const buttonRect = event.target.getBoundingClientRect();
+        this.setState({
+            menuPos: { top: buttonRect.top + buttonRect.height, left: buttonRect.left },
+            isOpen: !this.state.isOpen
+        })
     };
 
     private onButtonBlur = (): void => {
-        this.setState({ isOpen: false})
+        this.setState({ ...this.state, isOpen: false });
     }
 
     private patternSelectedHandler = (pattern: string): () => void => {
         return (): void => {
-            this.setState({ isOpen: false });
+            this.setState({ ...this.state, isOpen: false });
             this.props.onChanged((Pattern as never)[pattern]);
         }
     }
@@ -48,10 +55,13 @@ class PatternDropdown extends Component<PatternDropdownProps, PatternDropdownSta
                       onClick={this.onButtonClicked}>{this.patternDisplayName(Pattern[this.props.value])}
               </button>
               {this.state.isOpen ? (
-              <div className={style['menu']}>
-                { SORTED_PATTERN_NAMES.map( patternName => (
-                  <div className={style['menu-item']} onMouseDown={this.patternSelectedHandler(patternName)}>{this.patternDisplayName(patternName)}</div>
-                ))}
+              <div className={style['menu-container']}>
+                  <div className={style['menu']} style={`top:${this.state.menuPos.top}px;left:${this.state.menuPos.left}px;`}>
+                    { SORTED_PATTERN_NAMES.map( patternName => (
+                      <div className={classNames(style['menu-item'], { [style['menu-item-selected']]: (Pattern as never)[patternName] === this.props.value })}
+                           onMouseDown={this.patternSelectedHandler(patternName)}>{this.patternDisplayName(patternName)}</div>
+                    ))}
+                  </div>
               </div>) : ''}
           </div>
         );
