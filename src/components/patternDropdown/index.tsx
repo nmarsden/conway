@@ -23,12 +23,14 @@ class PatternDropdown extends Component<PatternDropdownProps, PatternDropdownSta
         }
     }
 
-    private onButtonClicked = (event: any): void => {
-        const buttonRect = event.target.getBoundingClientRect();
-        this.setState({
-            menuPos: { top: buttonRect.top + buttonRect.height, left: buttonRect.left },
-            isOpen: !this.state.isOpen
-        })
+    private onButtonClicked = (event: MouseEvent): void => {
+        if (event.target instanceof HTMLElement) {
+            const buttonRect = event.target.getBoundingClientRect();
+            this.setState({
+                menuPos: { top: buttonRect.top + buttonRect.height, left: buttonRect.left },
+                isOpen: !this.state.isOpen
+            })
+        }
     };
 
     private onButtonBlur = (): void => {
