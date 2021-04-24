@@ -29,7 +29,6 @@ class App extends Component<AppProps, AppState> {
 
   constructor(props: AppProps) {
     super(props);
-    console.log('App constructor!');
     window.addEventListener("resize", () => this.updateSettings(this.state.settings));
     this.initSettings(DEFAULT_SETTINGS);
   }
@@ -115,17 +114,11 @@ class App extends Component<AppProps, AppState> {
     this.setState( { isSettingsModalOpen: !this.state.isSettingsModalOpen });
   }
 
-  componentDidMount(): void {
-    console.log('App Did Mount!');
-  }
-
   componentWillUnmount(): void {
-    console.log('App Will Unmount!');
     nextGenStateUpdater.stop();
   }
 
   render(): JSX.Element {
-    // console.log('App render! generation:', this.state.generation.num);
     return (
       <div id="app">
         <Info pattern={this.state.settings.pattern}

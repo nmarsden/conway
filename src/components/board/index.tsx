@@ -1,6 +1,8 @@
 import {Component, h, JSX} from 'preact';
 import * as PIXI from 'pixi.js'
 
+PIXI.utils.skipHello();
+
 type HSLColor = {h: number; s: number; l: number };
 
 const DEFAULT_CELL_COLOR: HSLColor = { h:157, s:71, l:60 }; // green
@@ -49,7 +51,7 @@ class Board extends Component<BoardProps, BoardState> {
     this.resetRendererSize();
     this.resetScene();
 
-    this.logWebGLSupport();
+    // this.logWebGLSupport();
 
     this._rafId = window.requestAnimationFrame(this.draw);
   }
@@ -69,7 +71,7 @@ class Board extends Component<BoardProps, BoardState> {
     return PIXI.autoDetectRenderer({
       view: canvas,
       antialias: true,
-      transparent: true,
+      backgroundAlpha: 0,
       resolution: 1
     }) as PIXI.Renderer;
   }
