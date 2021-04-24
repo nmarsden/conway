@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "classnames": "^2.3.1",
+    "pixi.js": "^6.0.2",
     "preact": "^10.3.1",
     "preact-render-to-string": "^5.1.4",
     "preact-router": "^3.2.1"
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@types/enzyme": "^3.10.5",
     "@types/jest": "^26.0.8",
+    "@types/pixi.js": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^2.25.0",
     "@typescript-eslint/parser": "^2.25.0",
     "enzyme": "^3.11.0",

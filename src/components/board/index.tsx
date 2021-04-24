@@ -1,4 +1,5 @@
 import {Component, h, JSX} from 'preact';
+import * as PIXI from 'pixi.js'
 
 type HSLColor = {h: number; s: number; l: number };
 
@@ -16,13 +17,16 @@ type BoardState = {};
 
 class Board extends Component<BoardProps, BoardState> {
 
-  private canvas: HTMLCanvasElement | undefined;
-  private ctx: CanvasRenderingContext2D | null | undefined;
   private _rafId: number | undefined;
   private numColumns: number;
   private numRows: number;
   private cellSize: number;
+  private maxActive: number;
   private offset: {x: number; y: number};
+  private renderer?: PIXI.Renderer;
+  private scene?: PIXI.Container;
+  private cells?: Array<PIXI.Sprite>;
+  private activeTints?: Map<number, number>;
 
   constructor(props: BoardProps) {
     super(props);
@@ -33,7 +37,21 @@ class Board extends Component<BoardProps, BoardState> {
     this.numColumns = props.numColumns;
     this.numRows = props.numRows;
     this.cellSize = props.cellSize;
+    this.maxActive = props.maxActive;
     this.offset = this.calcOffset(this.numColumns, this.numRows, this.cellSize);
+  }
+
+  componentDidMount(): void {
+    this.scene = new PIXI.Container();
+    this.renderer = this.createRenderer();
+
+    this.resetActiveTints();
+    this.resetRendererSize();
+    this.resetScene();
+
+    this.logWebGLSupport();
+
+    this._rafId = window.requestAnimationFrame(this.draw);
   }
 
   calcOffset(numColumns: number, numRows: number, cellSize: number): {x: number; y: number} {
@@ -45,80 +63,164 @@ class Board extends Component<BoardProps, BoardState> {
     }
   }
 
-  setCanvasDimensions(): void {
-    if (this.canvas) {
-      this.canvas.width = (this.offset.x * 2) + this.cellSize * this.numColumns;
-      this.canvas.height = (this.offset.y * 2) + this.cellSize * this.numRows;
-      this.ctx = this.canvas.getContext('2d');
-    }
+  createRenderer(): PIXI.Renderer {
+    const canvas = (this.base as HTMLCanvasElement);
+
+    return PIXI.autoDetectRenderer({
+      view: canvas,
+      antialias: true,
+      transparent: true,
+      resolution: 1
+    }) as PIXI.Renderer;
   }
 
-  componentDidMount(): void {
-    this.canvas = (this.base as HTMLCanvasElement);
-    this.setCanvasDimensions();
-
-    this._rafId = window.requestAnimationFrame(this.draw);
+  hslToHex({ h, s, l, }: { h: number; s: number; l: number }): number {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = (n: number): string => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+    };
+    return PIXI.utils.string2hex(`#${f(0)}${f(8)}${f(4)}`);
   }
 
-  backgroundColorHSL(active: number, maxActive: number, activeColor: HSLColor): string {
+  activeHSLColor(active: number, maxActive: number, activeColor: HSLColor): { h: number; s: number; l: number } {
     const hue = active === 1 ? activeColor.h : ((activeColor.h - 200) + (200 * ( 1 - (active / maxActive))));
     const saturation = active === 1 ? activeColor.s : ((activeColor.s) + (10 * (active / maxActive)));
     const lightness = active === 1 ? activeColor.l : ((activeColor.l - 50) + (30 * (1 - (active / maxActive))));
-    return active === 0 ? 'transparent' : `hsl(${hue.toFixed(2)}, ${saturation.toFixed(2)}%, ${lightness.toFixed(2)}%)`;
+    return active === 0 ? { h:0, s:0, l:0 } : { h: hue, s: saturation, l: lightness };
+  }
+
+  resetActiveTints(): void {
+    this.activeTints = new Map();
+    for (let active=1; active <= this.maxActive; active++) {
+      const hsl = this.activeHSLColor(active, this.maxActive, DEFAULT_CELL_COLOR);
+      this.activeTints.set(active, this.hslToHex(hsl));
+    }
+  }
+
+  resetRendererSize(): void {
+    this.renderer?.resize(
+      (this.offset.x * 2) + this.cellSize * this.numColumns,
+      (this.offset.y * 2) + this.cellSize * this.numRows
+    );
+  }
+
+  createGridGraphic(): PIXI.Graphics {
+    const maxX = this.offset.x + this.numColumns * this.cellSize;
+    const maxY = this.offset.y + this.numRows * this.cellSize;
+
+    const grid = new PIXI.Graphics();
+    grid.lineStyle(1, 0x333333);
+
+    for (let x=this.offset.x; x<=maxX; x += this.cellSize) {
+      grid.moveTo(x, this.offset.y);
+      grid.lineTo(x, maxY);
+    }
+    for (let y=this.offset.y; y<=maxY; y += this.cellSize) {
+      grid.moveTo(this.offset.x, y);
+      grid.lineTo(maxX, y);
+    }
+    return grid;
+  }
+
+  createCellSprites(): PIXI.Sprite[] {
+    const rectSize = this.cellSize - 2;
+    const cellGraphic = new PIXI.Graphics();
+    cellGraphic.beginFill(0xFFFFFF);
+    cellGraphic.drawRect(0, 0, rectSize, rectSize);
+    cellGraphic.endFill();
+    const cellTexture = this.renderer?.generateTexture(cellGraphic);
+    const numCells = this.numRows * this.numColumns;
+
+    const cellSprites = [];
+    for (let i=0; i< numCells; i++) {
+      const row = Math.floor(i / this.props.numColumns);
+      const col = i % this.numColumns;
+      const x = this.offset.x + (col * this.props.cellSize) + 1;
+      const y = this.offset.y + (row * this.props.cellSize) + 1;
+
+      const sprite = new PIXI.Sprite(cellTexture)
+      sprite.position.x = x;
+      sprite.position.y = y;
+      sprite.alpha = 0;
+
+      cellSprites.push(sprite);
+    }
+    return cellSprites;
+  }
+
+  resetScene(): void {
+    // remove all children from scene
+    this.scene?.removeChildren();
+
+    // add grid to scene
+    this.scene?.addChild(this.createGridGraphic());
+
+    // add cells to scene
+    this.cells = this.createCellSprites();
+    const cellsContainer = new PIXI.Container();
+    for (const cell of this.cells) {
+      cellsContainer.addChild(cell);
+    }
+    this.scene?.addChild(cellsContainer);
+  }
+
+  resetActiveTintsIfNecessary(): void {
+    if (this.maxActive !== this.props.maxActive) {
+      this.maxActive = this.props.maxActive;
+      this.resetActiveTints();
+    }
+  }
+
+  resetRenderSizeAndSceneIfNecessary(): void {
+    if (this.numColumns !== this.props.numColumns
+      || this.numRows !== this.props.numRows
+      || this.cellSize !== this.props.cellSize) {
+      this.numColumns = this.props.numColumns;
+      this.numRows = this.props.numRows;
+      this.cellSize = this.props.cellSize;
+      this.offset = this.calcOffset(this.numColumns, this.numRows, this.cellSize);
+
+      this.resetRendererSize();
+      this.resetScene();
+    }
+  }
+
+  updateCellSpriteTints(): void {
+    if (this.cells && this.activeTints) {
+      for (let i = 0; i < this.props.cellData.length; i++) {
+        const cellValue = this.props.cellData[i];
+        if (cellValue === 0) {
+          this.cells[i].tint = 0x000000;
+          this.cells[i].alpha = 0;
+        } else {
+          this.cells[i].tint = this.activeTints.get(cellValue) as number;
+          this.cells[i].alpha = 1;
+        }
+      }
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   draw: FrameRequestCallback = (time) => {
     this._rafId = window.requestAnimationFrame(this.draw);
 
-    if (this.canvas && this.ctx) {
+    this.resetActiveTintsIfNecessary();
+    this.resetRenderSizeAndSceneIfNecessary();
 
-      if (this.numColumns !== this.props.numColumns
-        || this.numRows !== this.props.numRows
-        || this.cellSize !== this.props.cellSize) {
-        this.numColumns = this.props.numColumns;
-        this.numRows = this.props.numRows;
-        this.cellSize = this.props.cellSize;
-        this.offset = this.calcOffset(this.numColumns, this.numRows, this.cellSize);
-        this.setCanvasDimensions();
-      }
-      const maxX = this.offset.x + this.props.numColumns * this.props.cellSize;
-      const maxY = this.offset.y + this.props.numRows * this.props.cellSize;
+    this.updateCellSpriteTints();
 
-      // Clear
-      this.ctx.fillStyle = 'black';
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.renderer?.render(this.scene as PIXI.IRenderableObject);
+  }
 
-      // Draw grid
-      this.ctx.lineWidth = 1;
-      this.ctx.strokeStyle = 'rgb(51,51,51)';
-      for (let x=this.offset.x; x<=maxX; x += this.props.cellSize) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, this.offset.y);
-        this.ctx.lineTo(x, maxY);
-        this.ctx.stroke();
-      }
-      for (let y=this.offset.y; y<=maxY; y += this.props.cellSize) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.offset.x, y);
-        this.ctx.lineTo(maxX, y);
-        this.ctx.stroke();
-      }
-
-      // Draw cells
-      for (let i=0; i<this.props.cellData.length; i++) {
-          const cellValue = this.props.cellData[i];
-          if (cellValue > 0) {
-            this.ctx.fillStyle = this.backgroundColorHSL(cellValue, this.props.maxActive, DEFAULT_CELL_COLOR)
-
-            const row = Math.floor(i / this.props.numColumns);
-            const col = i % this.numColumns;
-            const x = this.offset.x + (col * this.props.cellSize) + 1;
-            const y = this.offset.y + (row * this.props.cellSize) + 1;
-            const rectSize = this.props.cellSize - 2;
-            this.ctx.fillRect(x, y, rectSize, rectSize);
-          }
-      }
+  logWebGLSupport(): void {
+    console.log('isWebGLSupported?', PIXI.utils.isWebGLSupported());
+    if (this.renderer && this.renderer.type == PIXI.RENDERER_TYPE.WEBGL){
+      console.log('Using WebGL');
+    } else {
+      console.log('Using Canvas');
     }
   }
 
