@@ -24,11 +24,12 @@ class Board extends Component<BoardProps, BoardState> {
   private numRows: number;
   private cellSize: number;
   private maxActive: number;
-  private offset: {x: number; y: number};
   private renderer?: PIXI.Renderer;
   private scene?: PIXI.Container;
   private cells?: Array<PIXI.Sprite>;
   private activeTints?: Map<number, number>;
+  private sceneTransform: { x: number; y: number; scale: number};
+  private lastDrawTime?: number;
 
   constructor(props: BoardProps) {
     super(props);
@@ -40,7 +41,9 @@ class Board extends Component<BoardProps, BoardState> {
     this.numRows = props.numRows;
     this.cellSize = props.cellSize;
     this.maxActive = props.maxActive;
-    this.offset = this.calcOffset(this.numColumns, this.numRows, this.cellSize);
+    this.sceneTransform = { x:0, y:0, scale:1 };
+
+    window.addEventListener("resize", () => this.resetRendererSize());
   }
 
   componentDidMount(): void {
@@ -54,15 +57,6 @@ class Board extends Component<BoardProps, BoardState> {
     // this.logWebGLSupport();
 
     this._rafId = window.requestAnimationFrame(this.draw);
-  }
-
-  calcOffset(numColumns: number, numRows: number, cellSize: number): {x: number; y: number} {
-    const pageWidth = (document.documentElement.clientWidth || document.body.clientWidth);
-    const pageHeight = (document.documentElement.clientHeight || document.body.clientHeight);
-    return {
-      x: Math.floor((pageWidth - (numColumns * cellSize)) / 2),
-      y: Math.floor((pageHeight - (numRows * cellSize)) / 2),
-    }
   }
 
   createRenderer(): PIXI.Renderer {
@@ -103,28 +97,12 @@ class Board extends Component<BoardProps, BoardState> {
   }
 
   resetRendererSize(): void {
+    const pageWidth = (document.documentElement.clientWidth || document.body.clientWidth);
+    const pageHeight = (document.documentElement.clientHeight || document.body.clientHeight);
     this.renderer?.resize(
-      (this.offset.x * 2) + this.cellSize * this.numColumns,
-      (this.offset.y * 2) + this.cellSize * this.numRows
+      pageWidth,
+      pageHeight
     );
-  }
-
-  createGridGraphic(): PIXI.Graphics {
-    const maxX = this.offset.x + this.numColumns * this.cellSize;
-    const maxY = this.offset.y + this.numRows * this.cellSize;
-
-    const grid = new PIXI.Graphics();
-    grid.lineStyle(1, 0x333333);
-
-    for (let x=this.offset.x; x<=maxX; x += this.cellSize) {
-      grid.moveTo(x, this.offset.y);
-      grid.lineTo(x, maxY);
-    }
-    for (let y=this.offset.y; y<=maxY; y += this.cellSize) {
-      grid.moveTo(this.offset.x, y);
-      grid.lineTo(maxX, y);
-    }
-    return grid;
   }
 
   createCellSprites(): PIXI.Sprite[] {
@@ -133,15 +111,15 @@ class Board extends Component<BoardProps, BoardState> {
     cellGraphic.beginFill(0xFFFFFF);
     cellGraphic.drawRect(0, 0, rectSize, rectSize);
     cellGraphic.endFill();
-    const cellTexture = this.renderer?.generateTexture(cellGraphic);
+    const cellTexture = this.renderer?.generateTexture(cellGraphic, PIXI.SCALE_MODES.LINEAR, 1);
     const numCells = this.numRows * this.numColumns;
 
     const cellSprites = [];
     for (let i=0; i< numCells; i++) {
       const row = Math.floor(i / this.props.numColumns);
       const col = i % this.numColumns;
-      const x = this.offset.x + (col * this.props.cellSize) + 1;
-      const y = this.offset.y + (row * this.props.cellSize) + 1;
+      const x = (col * this.props.cellSize) + 1;
+      const y = (row * this.props.cellSize) + 1;
 
       const sprite = new PIXI.Sprite(cellTexture)
       sprite.position.x = x;
@@ -156,9 +134,6 @@ class Board extends Component<BoardProps, BoardState> {
   resetScene(): void {
     // remove all children from scene
     this.scene?.removeChildren();
-
-    // add grid to scene
-    this.scene?.addChild(this.createGridGraphic());
 
     // add cells to scene
     this.cells = this.createCellSprites();
@@ -183,9 +158,7 @@ class Board extends Component<BoardProps, BoardState> {
       this.numColumns = this.props.numColumns;
       this.numRows = this.props.numRows;
       this.cellSize = this.props.cellSize;
-      this.offset = this.calcOffset(this.numColumns, this.numRows, this.cellSize);
 
-      this.resetRendererSize();
       this.resetScene();
     }
   }
@@ -195,13 +168,76 @@ class Board extends Component<BoardProps, BoardState> {
       for (let i = 0; i < this.props.cellData.length; i++) {
         const cellValue = this.props.cellData[i];
         if (cellValue === 0) {
-          this.cells[i].tint = 0x000000;
-          this.cells[i].alpha = 0;
+          this.cells[i].tint = 0x303030;
+          this.cells[i].alpha = 0.25;
         } else {
           this.cells[i].tint = this.activeTints.get(cellValue) as number;
           this.cells[i].alpha = 1;
         }
       }
+    }
+  }
+
+  updateSceneTransform(): void {
+    if (this.renderer && this.cells) {
+      const PADDING = 10 * this.cellSize;
+      const MIN_SCALE = 0.01;
+      const MAX_SCALE = 10;
+
+      // determine bounds of active cells (minX, minY, maxX & maxY) with padding
+      // Note: both values 1 & 2 are included in bounds to try and prevent the bounds constantly changing for a repeating pattern (eg. blinker)
+      let minX = Number.MAX_VALUE;
+      let maxX = 0;
+      let minY = Number.MAX_VALUE;
+      let maxY = 0;
+      for (let i = 0; i < this.props.cellData.length; i++) {
+        if (this.props.cellData[i] === 1 || this.props.cellData[i] === 2) {
+          const cellX = this.cells[i].x;
+          if (cellX < minX) {
+            minX = cellX;
+          }
+          if (cellX > maxX) {
+            maxX = cellX;
+          }
+          const cellY = this.cells[i].y;
+          if (cellY < minY) {
+            minY = cellY;
+          }
+          if (cellY > maxY) {
+            maxY = cellY;
+          }
+        }
+      }
+      minX = Math.max(0, minX - PADDING);
+      maxX = Math.min(this.numColumns * this.cellSize, maxX + this.cellSize + PADDING);
+      minY = Math.max(0, minY - PADDING);
+      maxY = Math.min(this.numRows * this.cellSize, maxY + this.cellSize + PADDING);
+
+      // determine scale
+      const viewWidth = (maxX - minX);
+      const viewHeight = (maxY - minY);
+      const screenWidth = this.renderer.width;
+      const screenHeight = this.renderer.height;
+      const screenRatio = screenWidth / screenHeight;
+      const scaleX = this.clamp(screenWidth / viewWidth, MIN_SCALE, MAX_SCALE);
+      const scaleY = this.clamp(screenHeight / viewHeight, MIN_SCALE, MAX_SCALE);
+      const scale = Math.min(scaleX, scaleY);
+
+      // adjust minX/minY according to scale
+      if (scaleX < scaleY) {
+        // adjust minY for scaleX
+        const adjustedViewHeight = viewWidth / screenRatio;
+        minY = minY - (adjustedViewHeight - viewHeight) / 2;
+      } else {
+        // adjust minX for scaleY
+        const adjustedViewWidth = screenRatio * viewHeight;
+        minX = minX - (adjustedViewWidth - viewWidth) / 2;
+      }
+
+      // Set scene transform (x, y, & scale)
+      const x = scale * (- minX);
+      const y = scale * (- minY);
+      this.sceneTransform = { x, y, scale };
     }
   }
 
@@ -213,8 +249,32 @@ class Board extends Component<BoardProps, BoardState> {
     this.resetRenderSizeAndSceneIfNecessary();
 
     this.updateCellSpriteTints();
+    this.updateSceneTransform();
+
+    // Update transform closer to desired transform based on timeDelta and rate
+    const RATE = 1;
+    const timeDelta = (typeof this.lastDrawTime === 'undefined') ? 0 : (time - this.lastDrawTime);
+    const t = RATE * (timeDelta / 1000);
+
+    this.lastDrawTime = time;
+
+    if (this.scene) {
+      const x = this.lerp(this.scene.position.x, this.sceneTransform.x, t);
+      const y = this.lerp(this.scene.position.y, this.sceneTransform.y, t);
+      const scale = this.lerp(this.scene.scale.x, this.sceneTransform.scale, t);
+
+      this.scene?.setTransform(x, y, scale, scale);
+    }
 
     this.renderer?.render(this.scene as PIXI.IRenderableObject);
+  }
+
+  lerp (start: number, end: number, amount: number): number {
+    return (1-amount)*start+amount*end
+  }
+
+  clamp (num: number, a: number, b: number): number {
+    return Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
   }
 
   logWebGLSupport(): void {

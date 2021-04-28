@@ -6,6 +6,9 @@ import SettingsButton from "./settingsButton";
 import Info from "./info";
 import Board from './board';
 
+const NUM_COLUMNS = 200;
+const NUM_ROWS = 200;
+
 const DEFAULT_SETTINGS: Settings = {
   speed: 10,
   cellSize: 20,
@@ -29,31 +32,19 @@ class App extends Component<AppProps, AppState> {
 
   constructor(props: AppProps) {
     super(props);
-    window.addEventListener("resize", () => this.updateSettings(this.state.settings));
     this.initSettings(DEFAULT_SETTINGS);
   }
 
   initSettings = (settings: Settings): void => {
-    const simulator = this.initSimulator(settings.cellSize, settings.pattern);
+    const simulator = this.initSimulator(settings.pattern);
     this.initAppState(settings, simulator);
     this.initNextGenStateUpdater(simulator, settings.speed, settings.trailSize);
   };
 
-  updateSettings = (settings: Settings): void => {
-    const simulator = this.initSimulator(settings.cellSize, settings.pattern);
-    this.updateAppState(settings, simulator);
-    this.initNextGenStateUpdater(simulator, settings.speed, settings.trailSize);
-  };
-
-  private initSimulator(cellSize: number, pattern: Pattern): Simulator {
-    const pageWidth = (document.documentElement.clientWidth || document.body.clientWidth);
-    const pageHeight = (document.documentElement.clientHeight || document.body.clientHeight);
-    const numColumns = Math.floor(pageWidth / cellSize);
-    const numRows = Math.floor(pageHeight / cellSize);
-
+  private initSimulator(pattern: Pattern): Simulator {
     return new Simulator({
-      numColumns,
-      numRows,
+      numColumns: NUM_COLUMNS,
+      numRows: NUM_ROWS,
       pattern
     });
   }
@@ -66,15 +57,6 @@ class App extends Component<AppProps, AppState> {
       numColumns: simulator.getSettings().numColumns,
       numRows: simulator.getSettings().numRows
     };
-  }
-
-  private updateAppState(settings: Settings, simulator: Simulator): void {
-    this.setState({
-      settings,
-      generation: simulator.initialGeneration(),
-      numColumns: simulator.getSettings().numColumns,
-      numRows: simulator.getSettings().numRows
-    });
   }
 
   private initNextGenStateUpdater(simulator: Simulator, speed: number, trailSize: number): void {
@@ -100,7 +82,7 @@ class App extends Component<AppProps, AppState> {
   }
 
   resetSimulation(cellSize: number, pattern: Pattern): void {
-    const simulator = this.initSimulator(cellSize, pattern);
+    const simulator = this.initSimulator(pattern);
     this.setState({
       settings: { ...this.state.settings, cellSize, pattern },
       generation: simulator.initialGeneration(),

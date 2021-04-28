@@ -58,14 +58,14 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
                        onInput={this.onSpeedChanged} />
               </div>
             </div>
-            <div className={style['field']}>
-              <div className={style['field-label']}>Cell Size: <span
-                className={style['field-value']}>{this.props.settings.cellSize}</span></div>
-              <div className={style['field-value']}>
-                <input type="range" min="10" max="100" step="5" value={this.props.settings.cellSize}
-                       onInput={this.onCellSizeChanged} />
-              </div>
-            </div>
+            {/*<div className={style['field']}>*/}
+            {/*  <div className={style['field-label']}>Cell Size: <span*/}
+            {/*    className={style['field-value']}>{this.props.settings.cellSize}</span></div>*/}
+            {/*  <div className={style['field-value']}>*/}
+            {/*    <input type="range" min="10" max="100" step="5" value={this.props.settings.cellSize}*/}
+            {/*           onInput={this.onCellSizeChanged} />*/}
+            {/*  </div>*/}
+            {/*</div>*/}
             <div className={style['field']}>
               <div className={style['field-label']}>Trail: <span
                 className={style['field-value']}>{this.props.settings.trailSize}</span></div>
