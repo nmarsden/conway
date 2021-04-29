@@ -1,3 +1,3 @@
 export default (config) => {
-    config.output.publicPath = '/conway/';
+    config.output.publicPath = '';
 };
