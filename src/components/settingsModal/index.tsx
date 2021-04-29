@@ -13,6 +13,7 @@ export type Settings = {
 type SettingsModalProps = {
   settings: Settings;
   onSettingsChanged: (settings: Settings) => void;
+  onClosed: () => void;
 };
 
 type SettingsModalState = {};
@@ -38,10 +39,14 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
     this.props.onSettingsChanged({...this.props.settings, pattern})
   };
 
+  preventModalContainerClick = (event: Event): void => {
+    event.stopPropagation();
+  };
+
   render(): JSX.Element {
     return (
-      <div class={style['modal-container']}>
-        <div class={style['modal']}>
+      <div class={style['modal-container']} onClick={this.props.onClosed}>
+        <div class={style['modal']} onClick={this.preventModalContainerClick}>
           <div class={style['heading']}>Settings</div>
           <div class={style['body']}>
             <div className={style['field']} key="patternField">

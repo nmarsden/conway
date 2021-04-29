@@ -93,7 +93,11 @@ class App extends Component<AppProps, AppState> {
   }
 
   settingsButtonClicked = (): void => {
-    this.setState( { isSettingsModalOpen: !this.state.isSettingsModalOpen });
+    this.setState( { isSettingsModalOpen: true });
+  }
+
+  settingsModalClosed = (): void => {
+    this.setState( { isSettingsModalOpen: false });
   }
 
   componentWillUnmount(): void {
@@ -113,7 +117,9 @@ class App extends Component<AppProps, AppState> {
                cellSize={this.state.settings.cellSize}
         />
         { this.state.isSettingsModalOpen ? <SettingsModal settings={this.state.settings}
-                                                          onSettingsChanged={this.settingsChanged} /> : '' }
+                                                          onSettingsChanged={this.settingsChanged}
+                                                          onClosed={this.settingsModalClosed} /> : '' }
+
         <SettingsButton onClicked={this.settingsButtonClicked} />
       </div>
     );
