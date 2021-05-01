@@ -1,7 +1,7 @@
 import {Component, h} from 'preact';
 import {Generation, Pattern, Simulator} from "../utils/simulator";
 import {NextGenStateUpdater} from "../utils/nextGenStateUpdater";
-import SettingsModal, {Settings} from "./settingsModal";
+import SettingsModal, {AppMode, Settings} from "./settingsModal";
 import SettingsButton from "./settingsButton";
 import Info from "./info";
 import Board from './board';
@@ -10,6 +10,7 @@ const NUM_COLUMNS = 200;
 const NUM_ROWS = 200;
 
 const DEFAULT_SETTINGS: Settings = {
+  mode: AppMode.Demo,
   speed: 10,
   cellSize: 20,
   pattern: Pattern.Glider,

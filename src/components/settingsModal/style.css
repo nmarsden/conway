@@ -7,15 +7,16 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: rgba(0, 0, 0, 0.7);
+	background: rgba(0, 0, 0, 0.9);
 	z-index: 1;
 }
 
 .modal {
-	width: 60%;
+	width: 90%;
 	height: 90%;
 	min-width: 250px;
-	max-width: 700px;
+	min-height: 255px;
+	max-width: 500px;
 	max-height: 400px;
 	background: rgba(168,196,236, 0.1);
 	border: 1px solid rgb(168,196,236);
@@ -28,7 +29,7 @@
 .heading {
 	font-size: 26px;
 	font-weight: bold;
-	color: hsl(157, 71%, 60%);
+	color: white;
 	margin-top: 20px;
 	text-align: center;
 	text-transform: uppercase;
@@ -49,13 +50,15 @@
 	display: flex;
 	flex-direction: column;
 	width: 191px;
-	height: 70px;
 	margin: 0 18px;
 }
 
+.field.field-disabled {
+	opacity: 0.3;
+}
+
 .field-label {
-	margin-bottom: 5px;
-	color: rgba(255, 255, 255, 0.8);
+	color: rgba(255, 255, 255, 0.9);
 }
 
 .field-value {
@@ -66,4 +69,42 @@
 
 .field-value input {
 	width: 191px;
+}
+
+.radio-input-container {
+	display: flex;
+	width: 100%;
+}
+
+.radio-input {
+	display: none;
+}
+
+.radio-input + label {
+	height: 30px;
+	line-height: 30px;
+	cursor: pointer;
+	flex: 1;
+	text-align: center;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	color: rgba(255, 255, 255, 0.6);
+}
+
+.radio-input + label:first-of-type {
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border-right: none;
+}
+
+.radio-input + label:last-of-type {
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.radio-input + label:hover {
+	color: white;
+}
+
+.radio-input:checked + label {
+	color: hsl(157, 71%, 60%);
 }

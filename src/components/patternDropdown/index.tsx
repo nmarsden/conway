@@ -6,6 +6,7 @@ import classNames from "classnames";
 type PatternDropdownProps = {
     value: Pattern;
     onChanged: (pattern: Pattern) => void;
+    disabled: boolean;
 };
 
 type PatternDropdownState = {
@@ -52,6 +53,7 @@ class PatternDropdown extends Component<PatternDropdownProps, PatternDropdownSta
         return (
           <div>
               <button className={style['button']}
+                      disabled={this.props.disabled}
                       tabIndex={0}
                       onBlur={this.onButtonBlur}
                       onClick={this.onButtonClicked}>{this.patternDisplayName(Pattern[this.props.value])}

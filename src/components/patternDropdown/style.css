@@ -1,10 +1,22 @@
 .button {
-	text-align: left;
-	height: 30px;
+	text-align: center;
+	height: 60px;
+	line-height: 30px;
 	width: 191px;
-	background-color: white;
-	border: 1px solid white;
-	font-size: 16px;
+	background-color: rgba(0, 0, 0, 0);
+	color: hsl(157, 71%, 60%);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 5px;
+	font-size: 22px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.button:disabled {
+	background-color: rgba(0, 0, 0, 0);
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-moz-tap-highlight-color: rgba(0, 0, 0, 0);
+	cursor: default;
 }
 
 .menu-container {
@@ -28,6 +40,7 @@
 	font-size: 20px;
 	padding: 4px 10px;
 	cursor: pointer;
+	color: rgba(255, 255, 255, 0.6);
 }
 
 .menu-item:hover {
@@ -36,6 +49,5 @@
 }
 
 .menu-item-selected {
-	background: white;
-	color: black;
+	color: hsl(157, 71%, 60%);
 }
