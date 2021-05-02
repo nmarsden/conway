@@ -1,5 +1,5 @@
 import {Component, h} from 'preact';
-import {Generation, Pattern, Simulator} from "../utils/simulator";
+import {Generation, Pattern, Simulator, SORTED_PATTERN_NAMES} from "../utils/simulator";
 import {NextGenStateUpdater} from "../utils/nextGenStateUpdater";
 import SettingsModal, {AppMode, Settings} from "./settingsModal";
 import SettingsButton from "./settingsButton";
@@ -31,12 +31,32 @@ let nextGenStateUpdater: NextGenStateUpdater;
 
 class App extends Component<AppProps, AppState> {
 
+  private demoTimerHandle: number | undefined;
+
   constructor(props: AppProps) {
     super(props);
     this.initSettings(DEFAULT_SETTINGS);
   }
 
+  startDemoMode(): void {
+    this.demoTimerHandle = window.setInterval(() => {
+      if (this.state.generation.num > 100) {
+        this.settingsChanged({...this.state.settings, pattern: this.nextPattern(this.state.settings.pattern)})
+      }
+    }, 100);
+  }
+
+  stopDemoMode(): void {
+    if (this.demoTimerHandle) {
+      window.clearInterval(this.demoTimerHandle);
+    }
+    this.demoTimerHandle = undefined;
+  }
+
   initSettings = (settings: Settings): void => {
+    if (settings.mode === AppMode.Demo) {
+      this.startDemoMode();
+    }
     const simulator = this.initSimulator(settings.pattern);
     this.initAppState(settings, simulator);
     this.initNextGenStateUpdater(simulator, settings.speed, settings.trailSize);
@@ -71,6 +91,11 @@ class App extends Component<AppProps, AppState> {
   settingsChanged = (settings: Settings): void => {
     const cellSizeChanged = (settings.cellSize !== this.state.settings.cellSize);
     const patternChanged = (settings.pattern !== this.state.settings.pattern);
+    const modeChanged = (settings.mode !== this.state.settings.mode);
+
+    if (modeChanged) {
+      this.updateMode(settings.mode);
+    }
 
     if (cellSizeChanged || patternChanged) {
       this.resetSimulation(settings.cellSize, settings.pattern);
@@ -79,6 +104,14 @@ class App extends Component<AppProps, AppState> {
       this.setState({settings});
       nextGenStateUpdater.setSpeed(settings.speed);
       nextGenStateUpdater.setTrailSize(settings.trailSize);
+    }
+  }
+
+  updateMode(mode: AppMode): void {
+    if (mode === AppMode.Demo) {
+      this.startDemoMode();
+    } else {
+      this.stopDemoMode();
     }
   }
 
@@ -124,6 +157,13 @@ class App extends Component<AppProps, AppState> {
         <SettingsButton onClicked={this.settingsButtonClicked} />
       </div>
     );
+  }
+
+  private nextPattern(pattern: Pattern): Pattern {
+    const index = SORTED_PATTERN_NAMES.indexOf(Pattern[pattern]);
+    const nextIndex = (index + 1) % SORTED_PATTERN_NAMES.length;
+    const nextPattern = SORTED_PATTERN_NAMES[nextIndex];
+    return (Pattern as never)[nextPattern];
   }
 }
 
