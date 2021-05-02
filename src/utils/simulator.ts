@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/camelcase
-export enum Pattern { Blinker, Pulsar, Glider, Lightweight_Spaceship, Gosper_Glider_Gun, Flotilla, Random, R_Pentomino, Queen_Bee, Hammerhead_Spaceship, Spacefiller }
+export enum Pattern { Blinker, Pulsar, Glider, Lightweight_Spaceship, Gosper_Glider_Gun, Flotilla, Random, R_Pentomino, Queen_Bee, Hammerhead_Spaceship, Spacefiller, Diamond }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export const SORTED_PATTERN_NAMES = (Object.keys(Pattern).map(key => (Pattern as any)[key]).filter(value => typeof value === 'string') as string[]).sort();
@@ -161,7 +161,20 @@ const PATTERN_DATA = {
     '       **    ***             ',
     '        ***                  ',
     '         *                   ',
-    '                             ',
+    '                             '
+  ],
+  [Pattern.Diamond]: [
+    '              ',
+    '     ****     ',
+    '              ',
+    '   ********   ',
+    '              ',
+    ' ************ ',
+    '              ',
+    '   ********   ',
+    '              ',
+    '     ****     ',
+    '              '
   ]
 }
 
