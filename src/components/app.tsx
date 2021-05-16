@@ -150,9 +150,10 @@ class App extends Component<AppProps, AppState> {
                maxActive={this.state.settings.trailSize + 1}
                cellSize={this.state.settings.cellSize}
         />
-        { this.state.isSettingsModalOpen ? <SettingsModal settings={this.state.settings}
-                                                          onSettingsChanged={this.settingsChanged}
-                                                          onClosed={this.settingsModalClosed} /> : '' }
+        <SettingsModal isOpen={this.state.isSettingsModalOpen}
+                       settings={this.state.settings}
+                       onSettingsChanged={this.settingsChanged}
+                       onClosed={this.settingsModalClosed} />
 
         <SettingsButton onClicked={this.settingsButtonClicked} />
       </div>

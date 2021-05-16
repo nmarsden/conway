@@ -15,6 +15,7 @@ export type Settings = {
 }
 
 type SettingsModalProps = {
+  isOpen: boolean;
   settings: Settings;
   onSettingsChanged: (settings: Settings) => void;
   onClosed: () => void;
@@ -65,17 +66,18 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
 
   render(): JSX.Element {
     return (
-      <div class={style['modal-container']} onClick={this.props.onClosed}>
+      <div className={classNames(style['modal-container'], { [style['is-open']]: this.props.isOpen })} onClick={this.props.onClosed}>
         <div class={style['modal']} onClick={this.preventModalContainerClick}>
+          <button class={style['close-button']} onClick={this.props.onClosed} />
           <div class={style['heading']}>Settings</div>
           <div class={style['body']}>
-            <div className={style['field']}>
-              <div className={style['field-label']}>Mode:</div>
-              <div className={style['field-value']}>
-                <div className={style['radio-input-container']}>
+            <div class={style['field']}>
+              <div class={style['field-label']}>Mode:</div>
+              <div class={style['field-value']}>
+                <div class={style['radio-input-container']}>
                   <input
                     id={AppMode[AppMode.Demo]}
-                    className={style['radio-input']}
+                    class={style['radio-input']}
                     name="mode"
                     type="radio"
                     checked={this.props.settings.mode === AppMode.Demo} />
@@ -84,7 +86,7 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
                     onClick={this.onModeChanged(AppMode.Demo)}>{AppMode[AppMode.Demo]}</label>
                   <input
                     id={AppMode[AppMode.Custom]}
-                    className={style['radio-input']}
+                    class={style['radio-input']}
                     name="mode"
                     type="radio"
                     checked={this.props.settings.mode === AppMode.Custom} />
@@ -94,19 +96,19 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
               </div>
             </div>
             </div>
-            <div className={classNames(style['field'], { [style['field-disabled']]: this.state.isDemoMode })} key="patternField">
-              <div className={style['field-label']}>Pattern:</div>
-              <div className={style['field-value']}>
+            <div class={classNames(style['field'], { [style['field-disabled']]: this.state.isDemoMode })} key="patternField">
+              <div class={style['field-label']}>Pattern:</div>
+              <div class={style['field-value']}>
                 <PatternDropdown
                   disabled={this.state.isDemoMode}
                   value={this.props.settings.pattern}
                   onChanged={this.onPatternChanged} />
               </div>
             </div>
-            <div className={classNames(style['field'], { [style['field-disabled']]: this.state.isDemoMode })}>
-              <div className={style['field-label']}>Speed: <span
-                className={style['field-value']}>{this.props.settings.speed}</span></div>
-              <div className={style['field-value']}>
+            <div class={classNames(style['field'], { [style['field-disabled']]: this.state.isDemoMode })}>
+              <div class={style['field-label']}>Speed: <span
+                class={style['field-value']}>{this.props.settings.speed}</span></div>
+              <div class={style['field-value']}>
                 <input type="range"
                        min="0"
                        max="10"
