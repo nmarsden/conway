@@ -3,9 +3,7 @@ import * as PIXI from 'pixi.js'
 
 PIXI.utils.skipHello();
 
-type HSLColor = {h: number; s: number; l: number };
-
-const DEFAULT_CELL_COLOR: HSLColor = { h:157, s:71, l:60 }; // green
+export type HSLColor = {h: number; s: number; l: number };
 
 type BoardProps = {
   numColumns: number;
@@ -13,11 +11,16 @@ type BoardProps = {
   cellData: number[];
   maxActive: number;
   cellSize: number;
+  isFullScreen: boolean;
+  boardWidth: number;
+  boardHeight: number;
+  activeCellColor: HSLColor;
+  isSmoothCamera: boolean;
 };
 
 type BoardState = {};
 
-class Board extends Component<BoardProps, BoardState> {
+export class Board extends Component<BoardProps, BoardState> {
 
   private _rafId: number | undefined;
   private numColumns: number;
@@ -30,6 +33,8 @@ class Board extends Component<BoardProps, BoardState> {
   private activeTints?: Map<number, number>;
   private sceneTransform: { x: number; y: number; scale: number};
   private lastDrawTime?: number;
+  private activeCellColor: HSLColor;
+  private isSmoothCamera: boolean;
 
   constructor(props: BoardProps) {
     super(props);
@@ -42,8 +47,12 @@ class Board extends Component<BoardProps, BoardState> {
     this.cellSize = props.cellSize;
     this.maxActive = props.maxActive;
     this.sceneTransform = { x:0, y:0, scale:1 };
+    this.activeCellColor = props.activeCellColor;
+    this.isSmoothCamera = props.isSmoothCamera;
 
-    window.addEventListener("resize", () => this.resetRendererSize());
+    if (props.isFullScreen) {
+      window.addEventListener("resize", () => this.resetRendererSize());
+    }
   }
 
   componentDidMount(): void {
@@ -57,6 +66,14 @@ class Board extends Component<BoardProps, BoardState> {
     // this.logWebGLSupport();
 
     this._rafId = window.requestAnimationFrame(this.draw);
+  }
+
+  componentWillUnmount(): void {
+    if (this._rafId) {
+      window.cancelAnimationFrame(this._rafId);
+    }
+    this.scene?.destroy(true);
+    this.renderer?.destroy(true);
   }
 
   createRenderer(): PIXI.Renderer {
@@ -91,14 +108,17 @@ class Board extends Component<BoardProps, BoardState> {
   resetActiveTints(): void {
     this.activeTints = new Map();
     for (let active=1; active <= this.maxActive; active++) {
-      const hsl = this.activeHSLColor(active, this.maxActive, DEFAULT_CELL_COLOR);
+      const hsl = this.activeHSLColor(active, this.maxActive, this.activeCellColor);
       this.activeTints.set(active, this.hslToHex(hsl));
     }
   }
 
   resetRendererSize(): void {
-    const pageWidth = (document.documentElement.clientWidth || document.body.clientWidth);
-    const pageHeight = (document.documentElement.clientHeight || document.body.clientHeight);
+    const fullScreenWidth = (document.documentElement.clientWidth || document.body.clientWidth);
+    const fullScreenHeight = (document.documentElement.clientHeight || document.body.clientHeight);
+    const pageWidth = (this.props.isFullScreen) ? fullScreenWidth : this.props.boardWidth;
+    const pageHeight = (this.props.isFullScreen) ? fullScreenHeight : this.props.boardHeight;
+
     this.renderer?.resize(
       pageWidth,
       pageHeight
@@ -145,8 +165,9 @@ class Board extends Component<BoardProps, BoardState> {
   }
 
   resetActiveTintsIfNecessary(): void {
-    if (this.maxActive !== this.props.maxActive) {
+    if (this.maxActive !== this.props.maxActive || this.activeCellColor !== this.props.activeCellColor) {
       this.maxActive = this.props.maxActive;
+      this.activeCellColor = this.props.activeCellColor;
       this.resetActiveTints();
     }
   }
@@ -254,7 +275,7 @@ class Board extends Component<BoardProps, BoardState> {
     // Update transform closer to desired transform based on timeDelta and rate
     const RATE = 1;
     const timeDelta = (typeof this.lastDrawTime === 'undefined') ? 0 : (time - this.lastDrawTime);
-    const t = RATE * (timeDelta / 1000);
+    const t = this.isSmoothCamera ? (RATE * (timeDelta / 1000)) : 1;
 
     this.lastDrawTime = time;
 
@@ -290,5 +311,3 @@ class Board extends Component<BoardProps, BoardState> {
     return <canvas />
   }
 }
-
-export default Board;

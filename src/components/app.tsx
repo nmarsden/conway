@@ -4,13 +4,14 @@ import {NextGenStateUpdater} from "../utils/nextGenStateUpdater";
 import SettingsModal, {AppMode, Settings} from "./settingsModal";
 import SettingsButton from "./settingsButton";
 import Info from "./info";
-import Board from './board';
+import {Board, HSLColor} from './board';
 
 const NUM_COLUMNS = 200;
 const NUM_ROWS = 200;
+const BOARD_ACTIVE_CELL_COLOR: HSLColor = { h:157, s:71, l:60 }; // green
 
 const DEFAULT_SETTINGS: Settings = {
-  mode: AppMode.Demo,
+  mode: AppMode.Custom,
   speed: 10,
   cellSize: 20,
   pattern: Pattern.Glider,
@@ -149,6 +150,11 @@ class App extends Component<AppProps, AppState> {
                cellData={this.state.generation.cellData}
                maxActive={this.state.settings.trailSize + 1}
                cellSize={this.state.settings.cellSize}
+               isFullScreen={true}
+               boardWidth={0}
+               boardHeight={0}
+               activeCellColor={BOARD_ACTIVE_CELL_COLOR}
+               isSmoothCamera={true}
         />
         <SettingsModal isOpen={this.state.isSettingsModalOpen}
                        settings={this.state.settings}

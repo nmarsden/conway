@@ -23,6 +23,7 @@
     ]
   },
   "dependencies": {
+    "@egjs/preact-flicking": "^3.2.2",
     "classnames": "^2.3.1",
     "pixi.js": "^6.0.2",
     "preact": "^10.3.1",

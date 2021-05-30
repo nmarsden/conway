@@ -1,8 +1,8 @@
 import {Component, h} from 'preact';
 import style from './style.css';
 import {Pattern} from "../../utils/simulator";
-import PatternDropdown from "../patternDropdown";
 import classNames from "classnames";
+import PatternSelector from "../patternSelector";
 
 export enum AppMode { Demo,Custom }
 
@@ -71,35 +71,35 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
           <button class={style['close-button']} onClick={this.props.onClosed} />
           <div class={style['heading']}>Settings</div>
           <div class={style['body']}>
-            <div class={style['field']}>
-              <div class={style['field-label']}>Mode:</div>
-              <div class={style['field-value']}>
-                <div class={style['radio-input-container']}>
-                  <input
-                    id={AppMode[AppMode.Demo]}
-                    class={style['radio-input']}
-                    name="mode"
-                    type="radio"
-                    checked={this.props.settings.mode === AppMode.Demo} />
-                  <label
-                    id={AppMode[AppMode.Demo]}
-                    onClick={this.onModeChanged(AppMode.Demo)}>{AppMode[AppMode.Demo]}</label>
-                  <input
-                    id={AppMode[AppMode.Custom]}
-                    class={style['radio-input']}
-                    name="mode"
-                    type="radio"
-                    checked={this.props.settings.mode === AppMode.Custom} />
-                  <label
-                    id={AppMode[AppMode.Custom]}
-                    onClick={this.onModeChanged(AppMode.Custom)}>{AppMode[AppMode.Custom]}</label>
-              </div>
-            </div>
-            </div>
-            <div class={classNames(style['field'], { [style['field-disabled']]: this.state.isDemoMode })} key="patternField">
+            {/*<div class={style['field']}>*/}
+            {/*  <div class={style['field-label']}>Mode:</div>*/}
+            {/*  <div class={style['field-value']}>*/}
+            {/*    <div class={style['radio-input-container']}>*/}
+            {/*      <input*/}
+            {/*        id={AppMode[AppMode.Demo]}*/}
+            {/*        class={style['radio-input']}*/}
+            {/*        name="mode"*/}
+            {/*        type="radio"*/}
+            {/*        checked={this.props.settings.mode === AppMode.Demo} />*/}
+            {/*      <label*/}
+            {/*        id={AppMode[AppMode.Demo]}*/}
+            {/*        onClick={this.onModeChanged(AppMode.Demo)}>{AppMode[AppMode.Demo]}</label>*/}
+            {/*      <input*/}
+            {/*        id={AppMode[AppMode.Custom]}*/}
+            {/*        class={style['radio-input']}*/}
+            {/*        name="mode"*/}
+            {/*        type="radio"*/}
+            {/*        checked={this.props.settings.mode === AppMode.Custom} />*/}
+            {/*      <label*/}
+            {/*        id={AppMode[AppMode.Custom]}*/}
+            {/*        onClick={this.onModeChanged(AppMode.Custom)}>{AppMode[AppMode.Custom]}</label>*/}
+            {/*  </div>*/}
+            {/*</div>*/}
+            {/*</div>*/}
+            <div class={classNames(style['field'], style['field-large'], { [style['field-disabled']]: this.state.isDemoMode })} key="patternField">
               <div class={style['field-label']}>Pattern:</div>
               <div class={style['field-value']}>
-                <PatternDropdown
+                <PatternSelector
                   disabled={this.state.isDemoMode}
                   value={this.props.settings.pattern}
                   onChanged={this.onPatternChanged} />

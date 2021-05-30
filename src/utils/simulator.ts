@@ -21,7 +21,7 @@ export type Generation = {
   cellData: number[];
 }
 
-const PATTERN_DATA = {
+export const PATTERN_DATA = {
   [Pattern.Blinker]: [
     '     ',
     '  *  ',
