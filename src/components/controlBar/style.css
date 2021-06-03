@@ -93,13 +93,32 @@
 	bottom: 60px;
 }
 
+.heading-wrapper {
+	height: 40px;
+}
+
 .heading {
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: 0;
+	width: 100%;
 	font-size: 26px;
 	font-weight: bold;
 	color: white;
 	margin-top: 10px;
 	text-align: center;
 	text-transform: uppercase;
+}
+
+.heading.is-shown {
+	opacity: 1;
+	transition: opacity 2s;
+}
+
+.heading.is-hidden {
+	opacity: 0;
+	transition: none;
 }
 
 .close-button {
@@ -121,7 +140,6 @@
 	justify-content: center;
 	margin: 10px 10px;
 	height: 160px;
-	overflow-y: auto;
 }
 
 .field {
@@ -150,15 +168,27 @@
 }
 
 .control {
+	will-change: transform, opacity;
 	position: absolute;
 	left: 0;
 	opacity: 0;
 	width: 100%;
 	height: 100%;
 	z-index: 1;
+	transition: transform 400ms, opacity 400ms;
+	transition-timing-function: ease-in;
+}
+
+.control.left {
+	transform: translateX(-100%);
+}
+
+.control.right {
+	transform: translateX(100%);
 }
 
 .control.is-shown {
+	transform: translateX(0%);
 	opacity: 1;
 	z-index: 2;
 }

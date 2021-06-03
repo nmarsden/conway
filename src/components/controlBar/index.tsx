@@ -90,22 +90,46 @@ class ControlBar extends Component<ControlBarProps, ControlBarState> {
     event.stopPropagation();
   };
 
-  renderControl(control: Control): JSX.Element {
+  controlHeadingClassNames = (renderedControl: Control, modalContent: Control): string => {
+    return classNames(style['heading'], {
+      [style['is-shown']]: renderedControl === modalContent,
+      [style['is-hidden']]: renderedControl !== modalContent,
+    });
+  }
+
+  renderControlHeading(modalContent: Control): JSX.Element {
+    return (<div class={style['heading-wrapper']}>
+              <div className={this.controlHeadingClassNames(Control.Pattern, modalContent)}>{getControlName(modalContent)}</div>
+              <div className={this.controlHeadingClassNames(Control.Speed, modalContent)}>{getControlName(modalContent)}</div>
+              <div className={this.controlHeadingClassNames(Control.Trail, modalContent)}>{getControlName(modalContent)}</div>
+            </div>);
+  }
+
+  controlClassNames = (renderedControl: Control, activeControl: Control): string => {
+    return classNames(style['control'],
+      {
+        [style['is-shown']]: activeControl !== Control.None && renderedControl === activeControl,
+        [style['left']]: activeControl !== Control.None && renderedControl.valueOf() < activeControl.valueOf(),
+        [style['right']]: activeControl !== Control.None && renderedControl.valueOf() > activeControl.valueOf(),
+      });
+  }
+
+  renderControl(activeControl: Control): JSX.Element {
     return (<Fragment>
-      <div class={classNames(style['control'], {[style['is-shown']]: control === Control.Pattern})}>
+      <div class={this.controlClassNames(Control.Pattern, activeControl)}>
         <PatternSelector
           disabled={false}
           value={this.props.settings.pattern}
           onChanged={this.onPatternChanged} />
       </div>
-      <div className={classNames(style['control'], {[style['is-shown']]: control === Control.Speed})}>
+      <div className={this.controlClassNames(Control.Speed, activeControl)}>
         <InputRange
           value={this.props.settings.speed}
           min={0}
           max={10}
           onChanged={this.onSpeedChanged} />
       </div>
-      <div className={classNames(style['control'], {[style['is-shown']]: control === Control.Trail})}>
+      <div className={this.controlClassNames(Control.Trail, activeControl)}>
         <InputRange
           value={this.props.settings.trailSize}
           min={0}
@@ -119,13 +143,13 @@ class ControlBar extends Component<ControlBarProps, ControlBarState> {
     return (
       <Fragment>
         <div class={classNames(style['modal'], {[style['is-open']]: this.state.activeButton !== Control.None})}>
-          <button class={style['close-button']} onClick={this.modalCloseButtonClicked} />
-          <div class={style['heading']}>{getControlName(this.state.modalContent)}</div>
+          {this.renderControlHeading(this.state.modalContent)}
           <div class={style['body']}>
             <div class={classNames(style['field'], style['field-large'])} key="patternField">
-              <div class={style['field-value']}>{this.renderControl(this.state.modalContent)}</div>
+              <div class={style['field-value']}>{this.renderControl(this.state.activeButton)}</div>
             </div>
           </div>
+          <button className={style['close-button']} onClick={this.modalCloseButtonClicked} />
         </div>
         <div class={classNames(style['control-bar'], {[style['is-open']]: this.state.isOpen})}
              onClick={this.props.onClosed}>
