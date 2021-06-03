@@ -3,16 +3,7 @@ import style from './style.css';
 import {Pattern} from "../../utils/simulator";
 import classNames from "classnames";
 import PatternSelector from "../patternSelector";
-
-export enum AppMode { Demo,Custom }
-
-export type Settings = {
-  mode: AppMode;
-  speed: number;
-  cellSize: number;
-  pattern: Pattern;
-  trailSize: number;
-}
+import {AppMode, Settings} from "../../utils/settings";
 
 type SettingsModalProps = {
   isOpen: boolean;

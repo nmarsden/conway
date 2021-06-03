@@ -1,10 +1,10 @@
 import {Component, h} from 'preact';
 import {Generation, Pattern, Simulator, SORTED_PATTERN_NAMES} from "../utils/simulator";
 import {NextGenStateUpdater} from "../utils/nextGenStateUpdater";
-import SettingsModal, {AppMode, Settings} from "./settingsModal";
-import SettingsButton from "./settingsButton";
+import {AppMode, Settings} from "../utils/settings";
 import Info from "./info";
 import {Board, HSLColor} from './board';
+import ControlBar from "./controlBar";
 
 const NUM_COLUMNS = 200;
 const NUM_ROWS = 200;
@@ -156,12 +156,9 @@ class App extends Component<AppProps, AppState> {
                activeCellColor={BOARD_ACTIVE_CELL_COLOR}
                isSmoothCamera={true}
         />
-        <SettingsModal isOpen={this.state.isSettingsModalOpen}
-                       settings={this.state.settings}
-                       onSettingsChanged={this.settingsChanged}
-                       onClosed={this.settingsModalClosed} />
-
-        <SettingsButton onClicked={this.settingsButtonClicked} />
+        <ControlBar settings={this.state.settings}
+                    onSettingsChanged={this.settingsChanged}
+                    onClosed={this.settingsModalClosed} />
       </div>
     );
   }
