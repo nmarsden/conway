@@ -1,4 +1,4 @@
-import {Component, h, Fragment} from 'preact';
+import {Component, Fragment, h} from 'preact';
 import style from './style.css';
 import {Pattern} from "../../utils/simulator";
 import classNames from "classnames";
@@ -22,7 +22,7 @@ const getControlName = (control: Control): string => {
 
 type ControlBarState = {
   isOpen: boolean;
-  isDemoMode: boolean;
+  isAutoMode: boolean;
   modalContent: Control;
   activeButton: Control;
 };
@@ -34,7 +34,7 @@ class ControlBar extends Component<ControlBarProps, ControlBarState> {
     super(props);
     this.state = {
       isOpen: false,
-      isDemoMode: props.settings.mode === AppMode.Demo,
+      isAutoMode: props.settings.mode === AppMode.Auto,
       modalContent: Control.Pattern,
       activeButton: Control.None
     }
@@ -47,6 +47,15 @@ class ControlBar extends Component<ControlBarProps, ControlBarState> {
     this.setState({isOpen, activeButton});
   };
 
+  autoButtonClickedHandler = (): void => {
+    const isAutoMode = !this.state.isAutoMode;
+    const mode = isAutoMode ? AppMode.Auto : AppMode.Custom;
+    const activeButton = isAutoMode ? Control.None : this.state.activeButton
+
+    this.setState({isAutoMode, activeButton});
+    this.props.onSettingsChanged({...this.props.settings, mode})
+  };
+  
   controlButtonClickedHandler = (control: Control): () => void => {
     return (): void => {
       const modalContent = control;
@@ -61,13 +70,6 @@ class ControlBar extends Component<ControlBarProps, ControlBarState> {
 
     this.setState({activeButton});
   };
-
-  onModeChanged = (mode: AppMode): (event: Event) => void => {
-    return (_: Event): void => {
-      this.setState({isDemoMode: mode === AppMode.Demo})
-      this.props.onSettingsChanged({...this.props.settings, mode})
-    };
-  }
 
   onSpeedChanged = (speed: number): void => {
     this.props.onSettingsChanged({...this.props.settings, speed})
@@ -139,6 +141,16 @@ class ControlBar extends Component<ControlBarProps, ControlBarState> {
       </Fragment>);
   }
 
+  controlButtonClassName = (control: Control): string => {
+    return classNames(style['button'], {
+      [style['pattern']]: control === Control.Pattern,
+      [style['speed']]: control === Control.Speed,
+      [style['trail']]: control === Control.Trail,
+      [style['active']]: this.state.activeButton === control,
+      [style['disabled']]: this.state.isAutoMode,
+    });
+  }
+
   render(): JSX.Element {
     return (
       <Fragment>
@@ -153,12 +165,19 @@ class ControlBar extends Component<ControlBarProps, ControlBarState> {
         </div>
         <div class={classNames(style['control-bar'], {[style['is-open']]: this.state.isOpen})}
              onClick={this.props.onClosed}>
-          <button class={classNames(style['button'], style['pattern'], {[style['active']]: this.state.activeButton === Control.Pattern})}
-                  onClick={this.controlButtonClickedHandler(Control.Pattern)}> </button>
-          <button class={classNames(style['button'], style['speed'], {[style['active']]: this.state.activeButton === Control.Speed})}
-                  onClick={this.controlButtonClickedHandler(Control.Speed)}> </button>
-          <button class={classNames(style['button'], style['trail'], {[style['active']]: this.state.activeButton === Control.Trail})}
-                  onClick={this.controlButtonClickedHandler(Control.Trail)}> </button>
+          <button class={classNames(style['button'], style['auto'], {[style['on']]: this.state.isAutoMode})}
+                  onClick={this.autoButtonClickedHandler}>
+            <div class={style['auto-label']}>Auto</div>
+            <div class={style['auto-switch-container']}>
+              <div class={style['auto-switch']} />
+            </div>
+          </button>
+          <button class={this.controlButtonClassName(Control.Pattern)}
+                  onClick={this.controlButtonClickedHandler(Control.Pattern)} />
+          <button class={this.controlButtonClassName(Control.Speed)}
+                  onClick={this.controlButtonClickedHandler(Control.Speed)} />
+          <button class={this.controlButtonClassName(Control.Trail)}
+                  onClick={this.controlButtonClickedHandler(Control.Trail)} />
         </div>
         <button class={classNames(style['button'], style['toggleControlsButton'])}
                 onClick={this.toggleControlBarButtonClicked}>

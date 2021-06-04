@@ -21,13 +21,13 @@ class SettingsModal extends Component<SettingsModalProps, SettingsModalState> {
   constructor(props: SettingsModalProps) {
     super(props);
     this.state = {
-      isDemoMode: props.settings.mode === AppMode.Demo
+      isDemoMode: props.settings.mode === AppMode.Auto
     }
   }
 
   onModeChanged = (mode: AppMode): (event: Event) => void => {
     return (_: Event): void => {
-      this.setState({ isDemoMode: mode === AppMode.Demo })
+      this.setState({ isDemoMode: mode === AppMode.Auto })
       this.props.onSettingsChanged({...this.props.settings, mode})
     };
   }

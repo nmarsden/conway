@@ -1,6 +1,6 @@
 import {Pattern} from "./simulator";
 
-export enum AppMode { Demo,Custom }
+export enum AppMode { Auto,Custom }
 
 export type Settings = {
   mode: AppMode;

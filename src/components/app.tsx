@@ -11,7 +11,7 @@ const NUM_ROWS = 200;
 const BOARD_ACTIVE_CELL_COLOR: HSLColor = { h:157, s:71, l:60 }; // green
 
 const DEFAULT_SETTINGS: Settings = {
-  mode: AppMode.Custom,
+  mode: AppMode.Auto,
   speed: 10,
   cellSize: 20,
   pattern: Pattern.Glider,
@@ -32,31 +32,31 @@ let nextGenStateUpdater: NextGenStateUpdater;
 
 class App extends Component<AppProps, AppState> {
 
-  private demoTimerHandle: number | undefined;
+  private autoTimerHandle: number | undefined;
 
   constructor(props: AppProps) {
     super(props);
     this.initSettings(DEFAULT_SETTINGS);
   }
 
-  startDemoMode(): void {
-    this.demoTimerHandle = window.setInterval(() => {
+  startAutoMode(): void {
+    this.autoTimerHandle = window.setInterval(() => {
       if (this.state.generation.num > 100) {
         this.settingsChanged({...this.state.settings, pattern: this.nextPattern(this.state.settings.pattern)})
       }
     }, 100);
   }
 
-  stopDemoMode(): void {
-    if (this.demoTimerHandle) {
-      window.clearInterval(this.demoTimerHandle);
+  stopAutoMode(): void {
+    if (this.autoTimerHandle) {
+      window.clearInterval(this.autoTimerHandle);
     }
-    this.demoTimerHandle = undefined;
+    this.autoTimerHandle = undefined;
   }
 
   initSettings = (settings: Settings): void => {
-    if (settings.mode === AppMode.Demo) {
-      this.startDemoMode();
+    if (settings.mode === AppMode.Auto) {
+      this.startAutoMode();
     }
     const simulator = this.initSimulator(settings.pattern);
     this.initAppState(settings, simulator);
@@ -109,10 +109,10 @@ class App extends Component<AppProps, AppState> {
   }
 
   updateMode(mode: AppMode): void {
-    if (mode === AppMode.Demo) {
-      this.startDemoMode();
+    if (mode === AppMode.Auto) {
+      this.startAutoMode();
     } else {
-      this.stopDemoMode();
+      this.stopAutoMode();
     }
   }
 

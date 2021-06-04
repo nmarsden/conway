@@ -49,6 +49,15 @@ class PatternSelector extends Component<PatternSelectorProps, PatternSelectorSta
     this.updateVisibility(this.state.patternItems);
   }
 
+  componentDidUpdate(prevProps: any, prevState: any): void {
+      if (prevProps.value !== this.props.value) {
+        if (this.ref.current) {
+          this.ref.current.moveTo(this.getPatternIndex(this.props.value));
+          this.updatePatternItemsState(this.props.value);
+        }
+      }
+  }
+
   updateVisibility = (patternItems: PatternItem[]): void => {
     if (this.ref.current) {
       const visiblePanels: FlickingPanel[] = this.ref.current.getVisiblePanels();
@@ -72,6 +81,12 @@ class PatternSelector extends Component<PatternSelectorProps, PatternSelectorSta
 
   inRange = (n: number, range: Range): boolean => {
     return n >= range.min && n <= range.max;
+  }
+
+  updatePatternItemsState = (selectedPattern: Pattern) => {
+    const updatedPatternItems = [ ...this.state.patternItems ];
+    updatedPatternItems.forEach(item => item.isSelected = (item.pattern === selectedPattern));
+    this.setState( { patternItems: updatedPatternItems });
   }
 
   render(): JSX.Element {
@@ -107,10 +122,8 @@ class PatternSelector extends Component<PatternSelectorProps, PatternSelectorSta
         // }}
         onSelect={(e: SelectEvent) => {
           const selectedPattern = this.state.patternItems[e.index].pattern;
-          const updatedPatternItems = [ ...this.state.patternItems ];
-          updatedPatternItems.forEach(item => item.isSelected = (item.pattern === selectedPattern));
-          this.setState( { patternItems: updatedPatternItems });
 
+          this.updatePatternItemsState(selectedPattern);
           this.props.onChanged(selectedPattern);
         }}
         // onChange={(e: ChangeEvent) => {
