@@ -174,8 +174,8 @@ button.disabled {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	margin: 10px 10px;
-	height: 160px;
+	margin-bottom: 5px;
+	height: 116px;
 }
 
 .field {

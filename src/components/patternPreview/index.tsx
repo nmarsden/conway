@@ -38,7 +38,6 @@ class PatternPreview extends Component<PatternPreviewProps, PatternPreviewState>
   render(): JSX.Element {
     return (
       <div class={classNames(style['pattern-preview'], {[style['selected']]: this.props.isSelected})}>
-        <div class={style['patternName']}>{this.state.patternName}</div>
         {this.props.isVisible ?
           <Board numColumns={this.state.numColumns}
                  numRows={this.state.numRows}
@@ -46,14 +45,15 @@ class PatternPreview extends Component<PatternPreviewProps, PatternPreviewState>
                  maxActive={1}
                  cellSize={20}
                  isFullScreen={false}
-                 boardWidth={130}
-                 boardHeight={130}
+                 boardWidth={80}
+                 boardHeight={80}
                  activeCellColor={this.props.isSelected ? SELECTED_CELL_COLOR : UNSELECTED_CELL_COLOR}
                  isSmoothCamera={false}
           />
           :
           <div />
         }
+        <div className={style['patternName']}>{this.state.patternName}</div>
       </div>
     );
   }

@@ -2,17 +2,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 130px;
-    height: 150px;
+    width: 80px;
+    height: 116px;
 }
 
 .patternName {
+    height: 36px;
     text-align: center;
     color: white;
     font-size: 12px;
     padding-top: 4px;
     padding-bottom: 4px;
-    white-space: nowrap;
 }
 
 .selected .patternName {
