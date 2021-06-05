@@ -9,7 +9,6 @@ import InputRange from "../inputRange";
 type ControlBarProps = {
   settings: Settings;
   onSettingsChanged: (settings: Settings) => void;
-  onClosed: () => void;
 };
 
 enum Control { None, Pattern, Speed, Trail}
@@ -163,8 +162,7 @@ class ControlBar extends Component<ControlBarProps, ControlBarState> {
           </div>
           <button className={style['close-button']} onClick={this.modalCloseButtonClicked} />
         </div>
-        <div class={classNames(style['control-bar'], {[style['is-open']]: this.state.isOpen})}
-             onClick={this.props.onClosed}>
+        <div class={classNames(style['control-bar'], {[style['is-open']]: this.state.isOpen})}>
           <button class={classNames(style['button'], style['auto'], {[style['on']]: this.state.isAutoMode})}
                   onClick={this.autoButtonClickedHandler}>
             <div class={style['auto-label']}>Auto</div>

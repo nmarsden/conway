@@ -23,9 +23,9 @@ type AppProps = {};
 type AppState = {
   settings: Settings;
   generation: Generation;
-  isSettingsModalOpen: boolean;
   numColumns: number;
   numRows: number;
+  isSmoothCamera: boolean;
 };
 
 let nextGenStateUpdater: NextGenStateUpdater;
@@ -75,9 +75,9 @@ class App extends Component<AppProps, AppState> {
     this.state = {
       settings,
       generation: simulator.initialGeneration(),
-      isSettingsModalOpen: false,
       numColumns: simulator.getSettings().numColumns,
-      numRows: simulator.getSettings().numRows
+      numRows: simulator.getSettings().numRows,
+      isSmoothCamera: true
     };
   }
 
@@ -96,6 +96,10 @@ class App extends Component<AppProps, AppState> {
 
     if (modeChanged) {
       this.updateMode(settings.mode);
+    }
+
+    if (patternChanged) {
+      this.disableSmoothCamera();
     }
 
     if (cellSizeChanged || patternChanged) {
@@ -127,12 +131,18 @@ class App extends Component<AppProps, AppState> {
     this.initNextGenStateUpdater(simulator, this.state.settings.speed, this.state.settings.trailSize);
   }
 
-  settingsButtonClicked = (): void => {
-    this.setState( { isSettingsModalOpen: true });
+  disableSmoothCamera = (): void  => {
+      this.setState( { isSmoothCamera: false });
   }
 
-  settingsModalClosed = (): void => {
-    this.setState( { isSettingsModalOpen: false });
+  enableSmoothCamera = (): void  => {
+      this.setState( { isSmoothCamera: true });
+  }
+
+  componentDidUpdate(previousProps: Readonly<AppProps>, previousState: Readonly<AppState>) {
+    if (!previousState.isSmoothCamera) {
+      this.enableSmoothCamera();
+    }
   }
 
   componentWillUnmount(): void {
@@ -154,11 +164,10 @@ class App extends Component<AppProps, AppState> {
                boardWidth={0}
                boardHeight={0}
                activeCellColor={BOARD_ACTIVE_CELL_COLOR}
-               isSmoothCamera={true}
+               isSmoothCamera={this.state.isSmoothCamera}
         />
         <ControlBar settings={this.state.settings}
-                    onSettingsChanged={this.settingsChanged}
-                    onClosed={this.settingsModalClosed} />
+                    onSettingsChanged={this.settingsChanged} />
       </div>
     );
   }

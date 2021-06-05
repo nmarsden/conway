@@ -262,6 +262,10 @@ export class Board extends Component<BoardProps, BoardState> {
     }
   }
 
+  updateSmoothCamera(): void {
+    this.isSmoothCamera = this.props.isSmoothCamera;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   draw: FrameRequestCallback = (time) => {
     this._rafId = window.requestAnimationFrame(this.draw);
@@ -271,6 +275,7 @@ export class Board extends Component<BoardProps, BoardState> {
 
     this.updateCellSpriteTints();
     this.updateSceneTransform();
+    this.updateSmoothCamera();
 
     // Update transform closer to desired transform based on timeDelta and rate
     const RATE = 1;
