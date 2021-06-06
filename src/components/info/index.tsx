@@ -2,12 +2,12 @@ import {FunctionComponent, h} from 'preact';
 import style from './style.css';
 import {getPatternDisplayName, Pattern} from "../../utils/simulator";
 
-type InfoProps = {
+export type InfoProps = {
   pattern: Pattern;
   generationNum: number;
 };
 
-const Info: FunctionComponent<InfoProps> = ({ pattern, generationNum }) => {
+export const Info: FunctionComponent<InfoProps> = ({ pattern, generationNum }) => {
   return (
     <div className={style['info']}>
       <div className={style['pattern']}>{getPatternDisplayName(pattern)}</div>
@@ -15,5 +15,3 @@ const Info: FunctionComponent<InfoProps> = ({ pattern, generationNum }) => {
     </div>
   );
 };
-
-export default Info;

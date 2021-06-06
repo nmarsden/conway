@@ -2,9 +2,9 @@ import {Component, h} from 'preact';
 import {Generation, Pattern, Simulator, SORTED_PATTERN_NAMES} from "../utils/simulator";
 import {NextGenStateUpdater} from "../utils/nextGenStateUpdater";
 import {AppMode, Settings} from "../utils/settings";
-import Info from "./info";
+import {Info} from "./info";
 import {Board, HSLColor} from './board';
-import ControlBar from "./controlBar";
+import {ControlBar} from "./controlBar";
 
 const NUM_COLUMNS = 200;
 const NUM_ROWS = 200;

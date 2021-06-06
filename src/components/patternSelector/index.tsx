@@ -2,9 +2,9 @@ import {Component, createRef, h} from 'preact';
 import {Pattern, SORTED_PATTERN_NAMES} from "../../utils/simulator";
 import {FlickingEvent, SelectEvent, FlickingPanel} from "@egjs/flicking";
 import Flicking from "@egjs/preact-flicking";
-import PatternPreview from "../patternPreview";
+import {PatternPreview} from "../patternPreview";
 
-type PatternSelectorProps = {
+export type PatternSelectorProps = {
   value: Pattern;
   onChanged: (pattern: Pattern) => void;
   disabled: boolean;
@@ -25,7 +25,7 @@ type Range = {
   max: number;
 }
 
-class PatternSelector extends Component<PatternSelectorProps, PatternSelectorState> {
+export class PatternSelector extends Component<PatternSelectorProps, PatternSelectorState> {
 
   ref = createRef();
 
@@ -169,5 +169,3 @@ class PatternSelector extends Component<PatternSelectorProps, PatternSelectorSta
     );
   }
 }
-
-export default PatternSelector;

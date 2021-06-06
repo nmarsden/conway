@@ -1,7 +1,7 @@
 import {Component, h} from 'preact';
 import style from './style.css';
 
-type InputRangeProps = {
+export type InputRangeProps = {
   value: number;
   min: number;
   max: number;
@@ -11,7 +11,7 @@ type InputRangeProps = {
 type InputRangeState = {
 };
 
-class InputRange extends Component<InputRangeProps, InputRangeState> {
+export class InputRange extends Component<InputRangeProps, InputRangeState> {
 
   constructor(props: InputRangeProps) {
     super(props);
@@ -37,5 +37,3 @@ class InputRange extends Component<InputRangeProps, InputRangeState> {
     );
   }
 }
-
-export default InputRange;

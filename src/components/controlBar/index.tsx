@@ -2,11 +2,11 @@ import {Component, Fragment, h} from 'preact';
 import style from './style.css';
 import {Pattern} from "../../utils/simulator";
 import classNames from "classnames";
-import PatternSelector from "../patternSelector";
+import {PatternSelector} from "../patternSelector";
 import {AppMode, Settings} from "../../utils/settings";
-import InputRange from "../inputRange";
+import {InputRange} from "../inputRange";
 
-type ControlBarProps = {
+export type ControlBarProps = {
   settings: Settings;
   onSettingsChanged: (settings: Settings) => void;
 };
@@ -27,7 +27,7 @@ type ControlBarState = {
 };
 
 
-class ControlBar extends Component<ControlBarProps, ControlBarState> {
+export class ControlBar extends Component<ControlBarProps, ControlBarState> {
 
   constructor(props: ControlBarProps) {
     super(props);
@@ -185,5 +185,3 @@ class ControlBar extends Component<ControlBarProps, ControlBarState> {
     );
   }
 }
-
-export default ControlBar;

@@ -1,7 +1,7 @@
 import { h } from 'preact';
 // See: https://github.com/preactjs/enzyme-adapter-preact-pure
 import {shallow, ShallowWrapper} from 'enzyme';
-import InputRange from "../../src/components/inputRange";
+import {InputRange} from "../../src/components/inputRange";
 
 describe('InputRange', () => {
     let context: ShallowWrapper;

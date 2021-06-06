@@ -8,7 +8,7 @@ import {PatternProvider} from "../../utils/patternProvider";
 const SELECTED_CELL_COLOR = {h: 157, s: 71, l: 60}; // green
 const UNSELECTED_CELL_COLOR = {h: 0, s: 0, l: 100}; // white
 
-type PatternPreviewProps = {
+export type PatternPreviewProps = {
   pattern: Pattern;
   isSelected: boolean;
   isVisible: boolean;
@@ -21,7 +21,7 @@ type PatternPreviewState = {
   cellData: number[];
 };
 
-class PatternPreview extends Component<PatternPreviewProps, PatternPreviewState> {
+export class PatternPreview extends Component<PatternPreviewProps, PatternPreviewState> {
 
   constructor(props: PatternPreviewProps) {
     super(props);
@@ -58,5 +58,3 @@ class PatternPreview extends Component<PatternPreviewProps, PatternPreviewState>
     );
   }
 }
-
-export default PatternPreview;
