@@ -1,10 +1,12 @@
-import '../style/index.css';
 import {h} from 'preact';
 import {InputRange} from '../components/inputRange';
 
 export default {
   title: 'Example/InputRange',
-  component: InputRange
+  component: InputRange,
+  parameters: {
+    layout: 'fullscreen'
+  }
 };
 
 export const Example = () => <InputRange min={1}

@@ -1,20 +1,15 @@
-import '../style/index.css';
 import {h} from 'preact';
 import {ControlBar} from '../components/controlBar';
-import {AppMode} from "../utils/settings";
-import {Pattern} from "../utils/simulator";
+import {DEFAULT_SETTINGS} from "../components/app";
 
 export default {
   title: 'Example/ControlBar',
-  component: ControlBar
+  component: ControlBar,
+  parameters: {
+    layout: 'fullscreen'
+  }
 };
 
-export const Example = () => <ControlBar settings={{
-                                            mode: AppMode.Auto,
-                                            cellSize: 20,
-                                            trailSize: 40,
-                                            speed: 10,
-                                            pattern: Pattern.Glider
-                                         }}
+export const Example = () => <ControlBar settings={DEFAULT_SETTINGS}
                                          onSettingsChanged={(): void => { /* do nothing */}} />;
 

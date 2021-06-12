@@ -4,9 +4,13 @@ import {Component, h} from 'preact';
 import {getPatternDisplayName, Pattern} from "../../utils/simulator";
 import {Board} from "../board";
 import {PatternProvider} from "../../utils/patternProvider";
+import {Trail} from "../../utils/settings";
 
 const SELECTED_CELL_COLOR = {h: 157, s: 71, l: 60}; // green
 const UNSELECTED_CELL_COLOR = {h: 0, s: 0, l: 100}; // white
+
+const SELECTED_TRAIL: Trail = { size: 1, colors: [ SELECTED_CELL_COLOR ]};
+const UNSELECTED_TRAIL: Trail = { size: 1, colors: [ UNSELECTED_CELL_COLOR ]};
 
 export type PatternPreviewProps = {
   pattern: Pattern;
@@ -42,12 +46,11 @@ export class PatternPreview extends Component<PatternPreviewProps, PatternPrevie
           <Board numColumns={this.state.numColumns}
                  numRows={this.state.numRows}
                  cellData={this.state.cellData}
-                 maxActive={1}
+                 trail={this.props.isSelected ? SELECTED_TRAIL : UNSELECTED_TRAIL}
                  cellSize={20}
                  isFullScreen={false}
                  boardWidth={80}
                  boardHeight={80}
-                 activeCellColor={this.props.isSelected ? SELECTED_CELL_COLOR : UNSELECTED_CELL_COLOR}
                  isSmoothCamera={false}
           />
           :

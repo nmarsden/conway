@@ -8,9 +8,11 @@
 }
 .value {
     font-size: 40px;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    font-weight: bold;
+    color: hsl(157, 71%, 60%);
+    margin-bottom: 10px;
 }
+
 .input {
     width: 100%;
 }

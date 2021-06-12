@@ -3,8 +3,9 @@ import style from './style.css';
 import {Pattern} from "../../utils/simulator";
 import classNames from "classnames";
 import {PatternSelector} from "../patternSelector";
-import {AppMode, Settings} from "../../utils/settings";
+import {AppMode, Settings, Trail} from "../../utils/settings";
 import {InputRange} from "../inputRange";
+import {TrailControl} from "../trailControl";
 
 export type ControlBarProps = {
   settings: Settings;
@@ -79,12 +80,12 @@ export class ControlBar extends Component<ControlBarProps, ControlBarState> {
     this.props.onSettingsChanged({...this.props.settings, cellSize})
   };
 
-  onTrailSizeChanged = (trailSize: number): void => {
-    this.props.onSettingsChanged({...this.props.settings, trailSize})
-  };
-
   onPatternChanged = (pattern: Pattern): void => {
     this.props.onSettingsChanged({...this.props.settings, pattern})
+  };
+
+  onTrailChanged = (trail: Trail): void => {
+    this.props.onSettingsChanged({...this.props.settings, trail: trail})
   };
 
   preventModalContainerClick = (event: Event): void => {
@@ -131,11 +132,9 @@ export class ControlBar extends Component<ControlBarProps, ControlBarState> {
           onChanged={this.onSpeedChanged} />
       </div>
       <div className={this.controlClassNames(Control.Trail, activeControl)}>
-        <InputRange
-          value={this.props.settings.trailSize}
-          min={0}
-          max={40}
-          onChanged={this.onTrailSizeChanged} />
+        <TrailControl
+          trail={this.props.settings.trail}
+          onChanged={this.onTrailChanged} />
       </div>
       </Fragment>);
   }
@@ -157,7 +156,7 @@ export class ControlBar extends Component<ControlBarProps, ControlBarState> {
           {this.renderControlHeading(this.state.modalContent)}
           <div class={style['body']}>
             <div class={classNames(style['field'], style['field-large'])} key="patternField">
-              <div class={style['field-value']}>{this.renderControl(this.state.activeButton)}</div>
+              {this.renderControl(this.state.activeButton)}
             </div>
           </div>
           <button className={style['close-button']} onClick={this.modalCloseButtonClicked} />

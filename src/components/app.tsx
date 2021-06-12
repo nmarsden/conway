@@ -3,19 +3,21 @@ import {Generation, Pattern, Simulator, SORTED_PATTERN_NAMES} from "../utils/sim
 import {NextGenStateUpdater} from "../utils/nextGenStateUpdater";
 import {AppMode, Settings} from "../utils/settings";
 import {Info} from "./info";
-import {Board, HSLColor} from './board';
+import {Board} from './board';
 import {ControlBar} from "./controlBar";
+import {buildTrail} from "./trailControl";
 
 const NUM_COLUMNS = 200;
 const NUM_ROWS = 200;
-const BOARD_ACTIVE_CELL_COLOR: HSLColor = { h:157, s:71, l:60 }; // green
+const TRAIL_START_HUE = 157;
+const TRAIL_END_HUE = 0;
 
-const DEFAULT_SETTINGS: Settings = {
+export const DEFAULT_SETTINGS: Settings = {
   mode: AppMode.Auto,
   speed: 10,
   cellSize: 20,
   pattern: Pattern.Glider,
-  trailSize: 20
+  trail: buildTrail(TRAIL_START_HUE, TRAIL_END_HUE, 20)
 }
 
 type AppProps = {};
@@ -60,7 +62,7 @@ class App extends Component<AppProps, AppState> {
     }
     const simulator = this.initSimulator(settings.pattern);
     this.initAppState(settings, simulator);
-    this.initNextGenStateUpdater(simulator, settings.speed, settings.trailSize);
+    this.initNextGenStateUpdater(simulator, settings.speed, settings.trail.size);
   };
 
   private initSimulator(pattern: Pattern): Simulator {
@@ -108,7 +110,7 @@ class App extends Component<AppProps, AppState> {
     else {
       this.setState({settings});
       nextGenStateUpdater.setSpeed(settings.speed);
-      nextGenStateUpdater.setTrailSize(settings.trailSize);
+      nextGenStateUpdater.setTrailSize(settings.trail.size);
     }
   }
 
@@ -128,7 +130,7 @@ class App extends Component<AppProps, AppState> {
       numColumns: simulator.getSettings().numColumns,
       numRows: simulator.getSettings().numRows
     });
-    this.initNextGenStateUpdater(simulator, this.state.settings.speed, this.state.settings.trailSize);
+    this.initNextGenStateUpdater(simulator, this.state.settings.speed, this.state.settings.trail.size);
   }
 
   disableSmoothCamera = (): void  => {
@@ -158,12 +160,11 @@ class App extends Component<AppProps, AppState> {
         <Board numColumns={this.state.numColumns}
                numRows={this.state.numRows}
                cellData={this.state.generation.cellData}
-               maxActive={this.state.settings.trailSize + 1}
+               trail={this.state.settings.trail}
                cellSize={this.state.settings.cellSize}
                isFullScreen={true}
                boardWidth={0}
                boardHeight={0}
-               activeCellColor={BOARD_ACTIVE_CELL_COLOR}
                isSmoothCamera={this.state.isSmoothCamera}
         />
         <ControlBar settings={this.state.settings}

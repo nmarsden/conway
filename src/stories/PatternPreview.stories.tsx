@@ -1,4 +1,3 @@
-import '../style/index.css';
 import {h} from 'preact';
 import {PatternPreview} from '../components/patternPreview';
 import {Pattern} from "../utils/simulator";

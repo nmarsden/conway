@@ -1,20 +1,19 @@
 import {Component, h, JSX} from 'preact';
 import * as PIXI from 'pixi.js'
+import {hslToHexNum} from "../../utils/colorUtils";
+import {Trail} from "../../utils/settings";
 
 PIXI.utils.skipHello();
-
-export type HSLColor = {h: number; s: number; l: number };
 
 type BoardProps = {
   numColumns: number;
   numRows: number;
   cellData: number[];
-  maxActive: number;
+  trail: Trail;
   cellSize: number;
   isFullScreen: boolean;
   boardWidth: number;
   boardHeight: number;
-  activeCellColor: HSLColor;
   isSmoothCamera: boolean;
 };
 
@@ -26,14 +25,13 @@ export class Board extends Component<BoardProps, BoardState> {
   private numColumns: number;
   private numRows: number;
   private cellSize: number;
-  private maxActive: number;
+  private trail: Trail;
   private renderer?: PIXI.Renderer;
   private scene?: PIXI.Container;
   private cells?: Array<PIXI.Sprite>;
   private activeTints?: Map<number, number>;
   private sceneTransform: { x: number; y: number; scale: number};
   private lastDrawTime?: number;
-  private activeCellColor: HSLColor;
   private isSmoothCamera: boolean;
 
   constructor(props: BoardProps) {
@@ -45,9 +43,8 @@ export class Board extends Component<BoardProps, BoardState> {
     this.numColumns = props.numColumns;
     this.numRows = props.numRows;
     this.cellSize = props.cellSize;
-    this.maxActive = props.maxActive;
+    this.trail = props.trail;
     this.sceneTransform = { x:0, y:0, scale:1 };
-    this.activeCellColor = props.activeCellColor;
     this.isSmoothCamera = props.isSmoothCamera;
 
     if (props.isFullScreen) {
@@ -87,29 +84,10 @@ export class Board extends Component<BoardProps, BoardState> {
     }) as PIXI.Renderer;
   }
 
-  hslToHex({ h, s, l, }: { h: number; s: number; l: number }): number {
-    l /= 100;
-    const a = s * Math.min(l, 1 - l) / 100;
-    const f = (n: number): string => {
-      const k = (n + h / 30) % 12;
-      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-      return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
-    };
-    return PIXI.utils.string2hex(`#${f(0)}${f(8)}${f(4)}`);
-  }
-
-  activeHSLColor(active: number, maxActive: number, activeColor: HSLColor): { h: number; s: number; l: number } {
-    const hue = active === 1 ? activeColor.h : ((activeColor.h - 200) + (200 * ( 1 - (active / maxActive))));
-    const saturation = active === 1 ? activeColor.s : ((activeColor.s) + (10 * (active / maxActive)));
-    const lightness = active === 1 ? activeColor.l : ((activeColor.l - 50) + (30 * (1 - (active / maxActive))));
-    return active === 0 ? { h:0, s:0, l:0 } : { h: hue, s: saturation, l: lightness };
-  }
-
   resetActiveTints(): void {
     this.activeTints = new Map();
-    for (let active=1; active <= this.maxActive; active++) {
-      const hsl = this.activeHSLColor(active, this.maxActive, this.activeCellColor);
-      this.activeTints.set(active, this.hslToHex(hsl));
+    for (let active=1; active <= this.trail.size; active++) {
+      this.activeTints.set(active, hslToHexNum(this.trail.colors[active-1]));
     }
   }
 
@@ -165,9 +143,8 @@ export class Board extends Component<BoardProps, BoardState> {
   }
 
   resetActiveTintsIfNecessary(): void {
-    if (this.maxActive !== this.props.maxActive || this.activeCellColor !== this.props.activeCellColor) {
-      this.maxActive = this.props.maxActive;
-      this.activeCellColor = this.props.activeCellColor;
+    if (this.trail !== this.props.trail) {
+      this.trail = this.props.trail;
       this.resetActiveTints();
     }
   }

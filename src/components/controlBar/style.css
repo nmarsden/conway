@@ -197,12 +197,6 @@ button.disabled {
 	color: rgba(255, 255, 255, 0.9);
 }
 
-.field-value {
-	font-weight: bold;
-	color: hsl(157, 71%, 60%);
-	margin-bottom: 10px;
-}
-
 .control {
 	will-change: transform, opacity;
 	position: absolute;

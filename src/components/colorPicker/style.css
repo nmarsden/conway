@@ -1,0 +1,85 @@
+.overlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: 1;
+}
+
+.overlay.is-open {
+	display: block;
+}
+
+.color-picker-container {
+	position: relative;
+}
+
+.button {
+	flex-shrink: 0;
+	width: 48px;
+	height: 48px;
+	cursor: pointer;
+	background-color: #fffaf0;
+	border: 1px solid white;
+	border-radius: 5px;
+}
+
+.color-picker {
+	display: none;
+	position: absolute;
+	top: 42px;
+	left: -48px;
+	z-index: 2;
+	flex-direction: column;
+	align-items: center;
+	margin-top: -5px;
+}
+
+.color-picker.is-open {
+	display: flex;
+}
+
+.color-picker :global .react-colorful {
+	width: 120px;
+	height: 40px;
+}
+
+.color-picker :global .react-colorful__saturation {
+	height: 0;
+	margin: 0;
+	display: none;
+}
+
+.color-picker :global .react-colorful__hue {
+	height: 40px;
+	border-radius: 0;
+	margin: 3px;
+}
+
+.pointer {
+	position: relative;
+	width: 0;
+	height: 0;
+	border-left: 17px solid transparent;
+	border-right: 17px solid transparent;
+	border-bottom: 17px solid #fffaf0;
+	margin-bottom: -2px;
+}
+
+.pointer::before {
+	content: '';
+	position: absolute;
+	top: 3px;
+	left: -14px;
+	border-left: 14px solid transparent;
+	border-right: 14px solid transparent;
+	border-bottom: 14px solid black;
+}
+
+.body {
+	border: 2px solid #fffaf0;
+	padding: 10px;
+	background-color: black;
+}
