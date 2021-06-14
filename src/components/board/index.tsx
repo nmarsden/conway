@@ -1,9 +1,11 @@
 import {Component, h, JSX} from 'preact';
 import * as PIXI from 'pixi.js'
-import {hslToHexNum} from "../../utils/colorUtils";
+import {hslToHexNum, lerpColor} from "../../utils/colorUtils";
 import {Trail} from "../../utils/settings";
 
 PIXI.utils.skipHello();
+
+const CELL_INACTIVE_ALPHA = 0.5;
 
 type BoardProps = {
   numColumns: number;
@@ -15,6 +17,7 @@ type BoardProps = {
   boardWidth: number;
   boardHeight: number;
   isSmoothCamera: boolean;
+  speed: number;
 };
 
 type BoardState = {};
@@ -33,6 +36,8 @@ export class Board extends Component<BoardProps, BoardState> {
   private sceneTransform: { x: number; y: number; scale: number};
   private lastDrawTime?: number;
   private isSmoothCamera: boolean;
+  private animationTimeTaken: number;
+  private cellData: number[];
 
   constructor(props: BoardProps) {
     super(props);
@@ -46,6 +51,8 @@ export class Board extends Component<BoardProps, BoardState> {
     this.trail = props.trail;
     this.sceneTransform = { x:0, y:0, scale:1 };
     this.isSmoothCamera = props.isSmoothCamera;
+    this.animationTimeTaken = 0;
+    this.cellData = props.cellData;
 
     if (props.isFullScreen) {
       window.addEventListener("resize", () => this.resetRendererSize());
@@ -142,6 +149,13 @@ export class Board extends Component<BoardProps, BoardState> {
     this.scene?.addChild(cellsContainer);
   }
 
+  resetAnimationTimeTakenIfNecessary(): void {
+    if (this.cellData !== this.props.cellData || this.trail !== this.props.trail) {
+      this.cellData = this.props.cellData;
+      this.animationTimeTaken = 0;
+    }
+  }
+
   resetActiveTintsIfNecessary(): void {
     if (this.trail !== this.props.trail) {
       this.trail = this.props.trail;
@@ -167,10 +181,25 @@ export class Board extends Component<BoardProps, BoardState> {
         const cellValue = this.props.cellData[i];
         if (cellValue === 0) {
           this.cells[i].tint = 0x303030;
-          this.cells[i].alpha = 0.25;
+          this.cells[i].alpha = CELL_INACTIVE_ALPHA;
         } else {
           this.cells[i].tint = this.activeTints.get(cellValue) as number;
           this.cells[i].alpha = 1;
+        }
+      }
+    }
+  }
+
+  updateCellSpriteTintsWithLerp(lerpAmount: number): void {
+    if (this.cells && this.activeTints) {
+      for (let i = 0; i < this.props.cellData.length; i++) {
+        const cellValue = this.props.cellData[i];
+        if (cellValue === 0) {
+          this.cells[i].tint = lerpColor(this.cells[i].tint, 0x303030, lerpAmount);
+          this.cells[i].alpha = this.lerp(this.cells[i].alpha, CELL_INACTIVE_ALPHA, lerpAmount);
+        } else {
+          this.cells[i].tint = lerpColor(this.cells[i].tint, this.activeTints.get(cellValue) as number, lerpAmount);
+          this.cells[i].alpha = this.lerp(this.cells[i].alpha, 1, lerpAmount);
         }
       }
     }
@@ -240,17 +269,18 @@ export class Board extends Component<BoardProps, BoardState> {
   }
 
   updateSmoothCamera(): void {
-    this.isSmoothCamera = this.props.isSmoothCamera;
+    if (this.isSmoothCamera !== this.props.isSmoothCamera) {
+      this.isSmoothCamera = this.props.isSmoothCamera;
+    }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   draw: FrameRequestCallback = (time) => {
     this._rafId = window.requestAnimationFrame(this.draw);
 
+    this.resetAnimationTimeTakenIfNecessary();
     this.resetActiveTintsIfNecessary();
     this.resetRenderSizeAndSceneIfNecessary();
 
-    this.updateCellSpriteTints();
     this.updateSceneTransform();
     this.updateSmoothCamera();
 
@@ -267,6 +297,17 @@ export class Board extends Component<BoardProps, BoardState> {
       const scale = this.lerp(this.scene.scale.x, this.sceneTransform.scale, t);
 
       this.scene?.setTransform(x, y, scale, scale);
+    }
+
+    if (this.isSmoothCamera) {
+      // Animate cell colors with an ease-in cubic transition
+      this.animationTimeTaken = this.animationTimeTaken + timeDelta;
+      if (this.animationTimeTaken < 1100) {
+        const tColor = this.props.speed === 0 ? 1 : Math.min(this.animationTimeTaken / (1000 / this.props.speed), 1);
+        this.updateCellSpriteTintsWithLerp(tColor * tColor * tColor);
+      }
+    } else {
+      this.updateCellSpriteTints();
     }
 
     this.renderer?.render(this.scene as PIXI.IRenderableObject);

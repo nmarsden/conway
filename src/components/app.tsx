@@ -166,6 +166,7 @@ class App extends Component<AppProps, AppState> {
                boardWidth={0}
                boardHeight={0}
                isSmoothCamera={this.state.isSmoothCamera}
+               speed={this.state.settings.speed}
         />
         <ControlBar settings={this.state.settings}
                     onSettingsChanged={this.settingsChanged} />

@@ -52,6 +52,7 @@ export class PatternPreview extends Component<PatternPreviewProps, PatternPrevie
                  boardWidth={80}
                  boardHeight={80}
                  isSmoothCamera={false}
+                 speed={10}
           />
           :
           <div />

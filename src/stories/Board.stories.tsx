@@ -19,4 +19,5 @@ export const Example = () => <Board isSmoothCamera={true}
                                     numColumns={10}
                                     numRows={10}
                                     cellData={cellData}
-                                    cellSize={20} />;
+                                    cellSize={20}
+                                    speed={10} />;

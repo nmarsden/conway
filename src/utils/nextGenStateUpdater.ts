@@ -25,7 +25,7 @@ export class NextGenStateUpdater {
       return;
     }
     this.timerHandle = window.setInterval(() => {
-      this.app.setState({generation: this.simulator.nextGeneration(this.trailSize)});
+      this.app.setState({generation: this.simulator.nextGeneration(this.trailSize-1)});
     }, 1000 / this.speed);
   }
 
