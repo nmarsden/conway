@@ -3,7 +3,7 @@ import {ControlBar} from '../components/controlBar';
 import {DEFAULT_SETTINGS} from "../components/app";
 
 export default {
-  title: 'Example/ControlBar',
+  title: 'ControlBar',
   component: ControlBar,
   parameters: {
     layout: 'fullscreen'

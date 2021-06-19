@@ -7,7 +7,7 @@ PIXI.utils.skipHello();
 
 const CELL_INACTIVE_ALPHA = 0.5;
 
-type BoardProps = {
+export type BoardProps = {
   numColumns: number;
   numRows: number;
   cellData: number[];

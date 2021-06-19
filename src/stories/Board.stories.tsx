@@ -1,23 +1,43 @@
 import {h} from 'preact';
-import {Board} from '../components/board';
-import {PatternProvider} from '../utils/patternProvider';
-import {Pattern} from "../utils/simulator";
-import {DEFAULT_SETTINGS} from "../components/app";
+import {Board, BoardProps} from '../components/board';
+import {Pattern, SORTED_PATTERN_NAMES} from "../utils/simulator";
+import {Meta, Story} from "@storybook/preact";
+import {PatternProvider} from "../utils/patternProvider";
+import {DEFAULT_SETTINGS, NUM_COLUMNS, NUM_ROWS} from "../components/app";
 
 export default {
-  title: 'Example/Board',
-  component: Board
-};
+  title: 'Board',
+  component: Board,
+  argTypes: {
+    pattern: {
+      options: SORTED_PATTERN_NAMES,
+      control: { type: 'select' }
+    }
+  },
+  args: {
+    pattern: SORTED_PATTERN_NAMES[0],
+    isSmoothCamera: true,
+    isFullScreen: true
+  }
+} as unknown as Meta;
 
-const cellData = PatternProvider.getPatternData(Pattern.Glider, 10, 10);
+type BoardStoryArgs = { pattern: string; isSmoothCamera: boolean; isFullScreen: boolean };
 
-export const Example = () => <Board isSmoothCamera={true}
-                                    trail={DEFAULT_SETTINGS.trail}
-                                    boardHeight={200}
-                                    boardWidth={200}
-                                    isFullScreen={false}
-                                    numColumns={10}
-                                    numRows={10}
-                                    cellData={cellData}
-                                    cellSize={20}
-                                    speed={10} />;
+const boardProps = (args: BoardStoryArgs): BoardProps => {
+  const {pattern, ...rest} = args;
+  return {
+    cellData: PatternProvider.getPatternData((Pattern as never)[pattern], NUM_COLUMNS, NUM_ROWS),
+    numColumns: NUM_COLUMNS,
+    numRows: NUM_ROWS,
+    trail: DEFAULT_SETTINGS.trail,
+    cellSize: 20,
+    boardWidth: NUM_COLUMNS,
+    boardHeight: NUM_ROWS,
+    speed: 10,
+    ...rest
+  }
+}
+
+const Template: Story<BoardStoryArgs> = (args) => <Board {...boardProps(args)} />;
+
+export const Example = Template.bind({});

@@ -3,7 +3,7 @@ import {PatternSelector} from '../components/patternSelector';
 import {Pattern} from "../utils/simulator";
 
 export default {
-  title: 'Example/PatternSelector',
+  title: 'PatternSelector',
   component: PatternSelector,
   parameters: {
     layout: 'fullscreen'

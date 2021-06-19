@@ -2,7 +2,7 @@ import {h} from 'preact';
 import {ColorPicker} from '../components/colorPicker';
 
 export default {
-  title: 'Example/ColorPicker',
+  title: 'ColorPicker',
   component: ColorPicker
 };
 

@@ -1,16 +1,33 @@
 import {h} from 'preact';
-import {PatternPreview} from '../components/patternPreview';
-import {Pattern} from "../utils/simulator";
+import {PatternPreview, PatternPreviewProps} from '../components/patternPreview';
+import {Pattern, SORTED_PATTERN_NAMES} from "../utils/simulator";
+import {Meta, Story} from "@storybook/preact";
 
 export default {
-  title: 'Example/PatternPreview',
-  component: PatternPreview
-};
+  title: 'PatternPreview',
+  component: PatternPreview,
+  argTypes: {
+    pattern: {
+      options: SORTED_PATTERN_NAMES,
+      control: { type: 'select' }
+    }
+  },
+  args: {
+    pattern: SORTED_PATTERN_NAMES[0],
+    isSelected: false
+  }
+} as unknown as Meta;
 
-export const Selected = () => <PatternPreview isSelected={true}
-                                              isVisible={true}
-                                              pattern={Pattern.Glider} />;
+type PatternPreviewStoryArgs = { pattern: string; isSelected: boolean };
 
-export const Unselected = () => <PatternPreview isSelected={false}
-                                                isVisible={true}
-                                                pattern={Pattern.Glider} />;
+const patternPreviewProps = (args: PatternPreviewStoryArgs): PatternPreviewProps => {
+  const {pattern, ...rest} = args;
+  return {
+    pattern: (Pattern as never)[pattern],
+    isVisible: true,
+    ...rest  }
+}
+
+const Template: Story<PatternPreviewStoryArgs> = (args) => <PatternPreview {...patternPreviewProps(args)} />;
+
+export const Example = Template.bind({});

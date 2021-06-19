@@ -2,7 +2,7 @@ import {h} from 'preact';
 import {InputRange} from '../components/inputRange';
 
 export default {
-  title: 'Example/InputRange',
+  title: 'InputRange',
   component: InputRange,
   parameters: {
     layout: 'fullscreen'

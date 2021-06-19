@@ -3,7 +3,7 @@ import {TrailControl} from '../components/trailControl';
 import {DEFAULT_SETTINGS} from "../components/app";
 
 export default {
-  title: 'Example/TrailControl',
+  title: 'TrailControl',
   component: TrailControl,
   parameters: {
     layout: 'fullscreen'
