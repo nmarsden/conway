@@ -16,7 +16,7 @@ export default {
     pattern: SORTED_PATTERN_NAMES[0],
     generationNum: 5
   }
-} as Meta;
+} as unknown as Meta;
 
 type InfoStoryArgs = Omit<InfoProps, "pattern"> & { pattern: string };
 

@@ -9,6 +9,13 @@
 	flex-direction: column;
 	color: white;
 	text-shadow: 0 0 5px black;
+	opacity: 1;
+	transition: opacity 1200ms;
+}
+
+.info--hide{
+	opacity: 0;
+	transition: none;
 }
 
 .pattern {
