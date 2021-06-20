@@ -65,6 +65,9 @@ export function hexToHSL(H: string): HSLColor {
 
 export function lerpColor(ah: number, bh: number, amount: number): number {
 
+  if (ah === bh || amount === 1) {
+    return bh;
+  }
   const ar = ah >> 16;
   const ag = ah >> 8 & 0xff;
   const ab = ah & 0xff;
@@ -77,5 +80,5 @@ export function lerpColor(ah: number, bh: number, amount: number): number {
   const rg = ag + amount * (bg - ag);
   const rb = ab + amount * (bb - ab);
 
-  return PIXI.utils.string2hex('#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1));
+  return (rr << 16) + (rg << 8) + (rb | 0);
 }

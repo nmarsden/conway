@@ -7,8 +7,8 @@ import {Board} from './board';
 import {ControlBar} from "./controlBar";
 import {buildTrail} from "./trailControl";
 
-export const NUM_COLUMNS = 200;
-export const NUM_ROWS = 200;
+export const NUM_COLUMNS = 100;
+export const NUM_ROWS = 100;
 const TRAIL_START_HUE = 157;
 const TRAIL_END_HUE = 0;
 

@@ -5,6 +5,8 @@ import {Trail} from "../../utils/settings";
 
 PIXI.utils.skipHello();
 
+const FRAMES_PER_SECOND = 60;  // Valid values are 60,30,20,15,10...
+const FRAME_MIN_TIME = (1000/60) * (60 / FRAMES_PER_SECOND) - (1000/60) * 0.5;
 const CELL_INACTIVE_ALPHA = 0.5;
 
 export type BoardProps = {
@@ -34,7 +36,7 @@ export class Board extends Component<BoardProps, BoardState> {
   private cells?: Array<PIXI.Sprite>;
   private activeTints?: Map<number, number>;
   private sceneTransform: { x: number; y: number; scale: number};
-  private lastDrawTime?: number;
+  private lastDrawTime: number;
   private isSmoothCamera: boolean;
   private animationTimeTaken: number;
   private cellData: number[];
@@ -50,6 +52,7 @@ export class Board extends Component<BoardProps, BoardState> {
     this.cellSize = props.cellSize;
     this.trail = props.trail;
     this.sceneTransform = { x:0, y:0, scale:1 };
+    this.lastDrawTime = window.performance.now();
     this.isSmoothCamera = props.isSmoothCamera;
     this.animationTimeTaken = 0;
     this.cellData = props.cellData;
@@ -275,7 +278,13 @@ export class Board extends Component<BoardProps, BoardState> {
   }
 
   draw: FrameRequestCallback = (time) => {
-    this._rafId = window.requestAnimationFrame(this.draw);
+    const timeDelta = time - this.lastDrawTime;
+
+    if (timeDelta < FRAME_MIN_TIME) {
+      this._rafId = window.requestAnimationFrame(this.draw);
+      return;
+    }
+    this.lastDrawTime = time;
 
     this.resetAnimationTimeTakenIfNecessary();
     this.resetActiveTintsIfNecessary();
@@ -286,10 +295,7 @@ export class Board extends Component<BoardProps, BoardState> {
 
     // Update transform closer to desired transform based on timeDelta and rate
     const RATE = 1;
-    const timeDelta = (typeof this.lastDrawTime === 'undefined') ? 0 : (time - this.lastDrawTime);
     const t = this.isSmoothCamera ? (RATE * (timeDelta / 1000)) : 1;
-
-    this.lastDrawTime = time;
 
     if (this.scene) {
       const x = this.lerp(this.scene.position.x, this.sceneTransform.x, t);
@@ -311,6 +317,8 @@ export class Board extends Component<BoardProps, BoardState> {
     }
 
     this.renderer?.render(this.scene as PIXI.IRenderableObject);
+
+    this._rafId = window.requestAnimationFrame(this.draw);
   }
 
   lerp (start: number, end: number, amount: number): number {
