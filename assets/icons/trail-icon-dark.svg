@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#FFF">
+    <rect x="285" y="280" width="65" height="65"/>
+    <rect x="210" y="206" width="65" height="65"/>
+    <rect x="360" y="280" width="65" height="65"/>
+    <rect x="210" y="355" width="65" height="65"/>
+    <rect x="285" y="355" width="65" height="65"/>
+    <path d="M 68 216 L 198 347 L 198 443 L 184 427 L 68 311 L 68 216 Z"/>
+    <path d="M 202 196 L 72 66 L 155 66 L 285 196 L 202 196 Z"/>
+    <path d="M 68 69 L 198 199 L 198 273 L 68 143 Z"/>
+    <path d="M 199 341 L 199 340 L 196 337 L 68 210 L 128 210 L 198 280 L 272 280 L 272 342 L 201 342 L 200 341 Z"/>
+    <path d="M 439 262 L 285 262 L 285 187 L 220 122 L 299 122 Z"/>
+  </g>
+</svg>
