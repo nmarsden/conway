@@ -13,14 +13,13 @@ export class PatternProvider {
         numColumns: 10,
         numRows: 10
       }
-    } else {
-      const patternData = PATTERN_DATA[pattern];
-      const patternWidth = patternData[0].length;
-      const patternHeight = patternData.length;
-      return {
-        numColumns: patternWidth,
-        numRows: patternHeight
-      }
+    }
+    const patternData = PATTERN_DATA[pattern];
+    const patternWidth = patternData[0].length;
+    const patternHeight = patternData.length;
+    return {
+      numColumns: patternWidth,
+      numRows: patternHeight
     }
   }
 

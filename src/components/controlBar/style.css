@@ -1,6 +1,6 @@
 .control-bar {
 	width: 100%;
-	background: black;
+	background: var(--backgroundColor);
 	display: flex;
 	flex-direction: row;
 	position: fixed;
@@ -14,22 +14,22 @@
 
 .control-bar.is-open {
 	opacity: 1;
-	right: 0;
+	right: 1px;
 }
 
 .button {
 	width: 52px;
 	height: 52px;
-	border: solid 1px black;
+	border: none;
 	color: black;
 	font-size: 50px;
 	font-weight: bold;
 	cursor: pointer;
-	background-color: #fffaf0;
+	background-color: transparent;
 }
 
 .button.active {
-	background-color: #c0d0bd;
+	background-color: hsla(213, 100%, 50%, 0.5);
 }
 
 button.disabled {
@@ -43,7 +43,6 @@ button.disabled {
 	bottom: 0;
 	margin: 0;
 	z-index: 1;
-	background: white;
 }
 
 .gear {
@@ -52,7 +51,7 @@ button.disabled {
 	left: 0;
 	width: 50px;
 	height: 50px;
-	background-image: url('../../assets/icons/gear-icon.svg');
+	background-image: var(--gearIcon);
 	background-size: 100% 100%;
 	border-radius: 50%;
 	cursor: pointer;
@@ -76,6 +75,7 @@ button.disabled {
 .auto-label {
 	font-size: 12px;
 	text-transform: uppercase;
+	color: var(--textColor);
 }
 
 .auto-switch-container {
@@ -93,26 +93,26 @@ button.disabled {
 .auto-switch {
 	width: 20px;
 	height: 20px;
-	background-color: white;
+	background-color: var(--textColor);
 	border: 1px solid #404040;
 	border-radius: 50%;
 }
 
 .pattern {
-	background-image: url('../../assets/icons/pattern-icon.svg');
+	background-image: var(--patternIcon);
 }
 
 .speed {
-	background-image: url('../../assets/icons/speed-icon.svg');
+	background-image: var(--speedIcon);
 }
 
 .trail {
-	background-image: url('../../assets/icons/trail-icon.svg');
+	background-image: var(--trailIcon);
 }
 
 .modal {
 	width: 100%;
-	background: rgba(0, 0, 0, 0.9);
+	background: var(--modalBackgroundColor);
 	display: flex;
 	flex-direction: column;
 	position: fixed;
@@ -141,7 +141,7 @@ button.disabled {
 	width: 100%;
 	font-size: 26px;
 	font-weight: bold;
-	color: white;
+	color: var(--textColor);
 	margin-top: 10px;
 	text-align: center;
 	text-transform: uppercase;
@@ -159,12 +159,12 @@ button.disabled {
 
 .close-button {
 	position: absolute;
-	top: -20px;
-	right: 10px;
+	top: -14px;
+	right: 6px;
 	width: 52px;
 	height: 52px;
 	background-color: transparent;
-	background-image: url('../../assets/icons/close-icon.svg');
+	background-image: var(--closeIcon);
 	background-size: 100% 100%;
 	border: none;
 	cursor: pointer;
@@ -182,19 +182,7 @@ button.disabled {
 	font-size: 22px;
 	display: flex;
 	flex-direction: column;
-	width: 191px;
-}
-
-.field.field-large {
 	width: 100%;
-}
-
-.field.field-disabled {
-	opacity: 0.3;
-}
-
-.field-label {
-	color: rgba(255, 255, 255, 0.9);
 }
 
 .control {

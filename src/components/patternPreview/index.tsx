@@ -5,18 +5,20 @@ import {getPatternDisplayName, Pattern} from "../../utils/simulator";
 import {Board} from "../board";
 import {PatternProvider} from "../../utils/patternProvider";
 import {Trail} from "../../utils/settings";
-
-const SELECTED_CELL_COLOR = {h: 157, s: 71, l: 60}; // green
-const UNSELECTED_CELL_COLOR = {h: 0, s: 0, l: 100}; // white
-
-const SELECTED_TRAIL: Trail = { size: 1, colors: [ SELECTED_CELL_COLOR ]};
-const UNSELECTED_TRAIL: Trail = { size: 1, colors: [ UNSELECTED_CELL_COLOR ]};
+import {HSLColor} from "../../utils/colorUtils";
 
 export type PatternPreviewProps = {
   pattern: Pattern;
+  patternColors: PatternColors;
   isSelected: boolean;
   isVisible: boolean;
 };
+
+export type PatternColors = {
+  boardColor: HSLColor;
+  selectedColor: HSLColor;
+  unselectedColor: HSLColor;
+}
 
 type PatternPreviewState = {
   patternName: string;
@@ -39,6 +41,11 @@ export class PatternPreview extends Component<PatternPreviewProps, PatternPrevie
     }
   }
 
+  trail(isSelected: boolean, patternColors: PatternColors): Trail {
+    const color = isSelected ? patternColors.selectedColor : patternColors.unselectedColor;
+    return { size: 1, colors: [ color ] }
+  }
+
   render(): JSX.Element {
     return (
       <div class={classNames(style['pattern-preview'], {[style['selected']]: this.props.isSelected})}>
@@ -46,7 +53,10 @@ export class PatternPreview extends Component<PatternPreviewProps, PatternPrevie
           <Board numColumns={this.state.numColumns}
                  numRows={this.state.numRows}
                  cellData={this.state.cellData}
-                 trail={this.props.isSelected ? SELECTED_TRAIL : UNSELECTED_TRAIL}
+                 colors={{
+                   inactiveCell: this.props.patternColors.boardColor,
+                   activeCellTrail: this.trail(this.props.isSelected, this.props.patternColors)
+                 }}
                  cellSize={20}
                  isFullScreen={false}
                  boardWidth={80}

@@ -1,19 +1,23 @@
 import {Component, h, JSX} from 'preact';
 import * as PIXI from 'pixi.js'
-import {hslToHexNum, lerpColor} from "../../utils/colorUtils";
+import {HSLColor, hslToHexNum, lerpColor} from "../../utils/colorUtils";
 import {Trail} from "../../utils/settings";
 
 PIXI.utils.skipHello();
 
 const FRAMES_PER_SECOND = 60;  // Valid values are 60,30,20,15,10...
 const FRAME_MIN_TIME = (1000/60) * (60 / FRAMES_PER_SECOND) - (1000/60) * 0.5;
-const CELL_INACTIVE_ALPHA = 0.5;
+
+export type BoardColors = {
+  inactiveCell: HSLColor;
+  activeCellTrail: Trail;
+};
 
 export type BoardProps = {
   numColumns: number;
   numRows: number;
   cellData: number[];
-  trail: Trail;
+  colors: BoardColors;
   cellSize: number;
   isFullScreen: boolean;
   boardWidth: number;
@@ -30,10 +34,11 @@ export class Board extends Component<BoardProps, BoardState> {
   private numColumns: number;
   private numRows: number;
   private cellSize: number;
-  private trail: Trail;
+  private colors: BoardColors;
   private renderer?: PIXI.Renderer;
   private scene?: PIXI.Container;
   private cells?: Array<PIXI.Sprite>;
+  private inactiveTint: number;
   private activeTints?: Map<number, number>;
   private sceneTransform: { x: number; y: number; scale: number};
   private lastDrawTime: number;
@@ -50,7 +55,8 @@ export class Board extends Component<BoardProps, BoardState> {
     this.numColumns = props.numColumns;
     this.numRows = props.numRows;
     this.cellSize = props.cellSize;
-    this.trail = props.trail;
+    this.colors = props.colors;
+    this.inactiveTint = hslToHexNum(props.colors.inactiveCell);
     this.sceneTransform = { x:0, y:0, scale:1 };
     this.lastDrawTime = window.performance.now();
     this.isSmoothCamera = props.isSmoothCamera;
@@ -66,7 +72,7 @@ export class Board extends Component<BoardProps, BoardState> {
     this.scene = new PIXI.Container();
     this.renderer = this.createRenderer();
 
-    this.resetActiveTints();
+    this.resetTints();
     this.resetRendererSize();
     this.resetScene();
 
@@ -94,10 +100,11 @@ export class Board extends Component<BoardProps, BoardState> {
     }) as PIXI.Renderer;
   }
 
-  resetActiveTints(): void {
+  resetTints(): void {
+    this.inactiveTint = hslToHexNum(this.colors.inactiveCell);
     this.activeTints = new Map();
-    for (let active=1; active <= this.trail.size; active++) {
-      this.activeTints.set(active, hslToHexNum(this.trail.colors[active-1]));
+    for (let active=1; active <= this.colors.activeCellTrail.size; active++) {
+      this.activeTints.set(active, hslToHexNum(this.colors.activeCellTrail.colors[active-1]));
     }
   }
 
@@ -132,7 +139,7 @@ export class Board extends Component<BoardProps, BoardState> {
       const sprite = new PIXI.Sprite(cellTexture)
       sprite.position.x = x;
       sprite.position.y = y;
-      sprite.alpha = 0;
+      sprite.alpha = 1;
 
       cellSprites.push(sprite);
     }
@@ -153,16 +160,16 @@ export class Board extends Component<BoardProps, BoardState> {
   }
 
   resetAnimationTimeTakenIfNecessary(): void {
-    if (this.cellData !== this.props.cellData || this.trail !== this.props.trail) {
+    if (this.cellData !== this.props.cellData || this.colors !== this.props.colors) {
       this.cellData = this.props.cellData;
       this.animationTimeTaken = 0;
     }
   }
 
-  resetActiveTintsIfNecessary(): void {
-    if (this.trail !== this.props.trail) {
-      this.trail = this.props.trail;
-      this.resetActiveTints();
+  resetTintsIfNecessary(): void {
+    if (this.colors !== this.props.colors) {
+      this.colors = this.props.colors;
+      this.resetTints();
     }
   }
 
@@ -183,11 +190,9 @@ export class Board extends Component<BoardProps, BoardState> {
       for (let i = 0; i < this.props.cellData.length; i++) {
         const cellValue = this.props.cellData[i];
         if (cellValue === 0) {
-          this.cells[i].tint = 0x303030;
-          this.cells[i].alpha = CELL_INACTIVE_ALPHA;
+          this.cells[i].tint = this.inactiveTint;
         } else {
           this.cells[i].tint = this.activeTints.get(cellValue) as number;
-          this.cells[i].alpha = 1;
         }
       }
     }
@@ -198,11 +203,9 @@ export class Board extends Component<BoardProps, BoardState> {
       for (let i = 0; i < this.props.cellData.length; i++) {
         const cellValue = this.props.cellData[i];
         if (cellValue === 0) {
-          this.cells[i].tint = lerpColor(this.cells[i].tint, 0x303030, lerpAmount);
-          this.cells[i].alpha = this.lerp(this.cells[i].alpha, CELL_INACTIVE_ALPHA, lerpAmount);
+          this.cells[i].tint = lerpColor(this.cells[i].tint, this.inactiveTint, lerpAmount);
         } else {
           this.cells[i].tint = lerpColor(this.cells[i].tint, this.activeTints.get(cellValue) as number, lerpAmount);
-          this.cells[i].alpha = this.lerp(this.cells[i].alpha, 1, lerpAmount);
         }
       }
     }
@@ -287,7 +290,7 @@ export class Board extends Component<BoardProps, BoardState> {
     this.lastDrawTime = time;
 
     this.resetAnimationTimeTakenIfNecessary();
-    this.resetActiveTintsIfNecessary();
+    this.resetTintsIfNecessary();
     this.resetRenderSizeAndSceneIfNecessary();
 
     this.updateSceneTransform();

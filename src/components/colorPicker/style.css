@@ -21,8 +21,7 @@
 	width: 48px;
 	height: 48px;
 	cursor: pointer;
-	background-color: #fffaf0;
-	border: 1px solid white;
+	border: 1px solid var(--textColor);
 	border-radius: 5px;
 }
 
@@ -64,7 +63,7 @@
 	height: 0;
 	border-left: 17px solid transparent;
 	border-right: 17px solid transparent;
-	border-bottom: 17px solid #fffaf0;
+	border-bottom: 17px solid var(--textColor);
 	margin-bottom: -2px;
 }
 
@@ -75,11 +74,11 @@
 	left: -14px;
 	border-left: 14px solid transparent;
 	border-right: 14px solid transparent;
-	border-bottom: 14px solid black;
+	border-bottom: 14px solid var(--backgroundColor);
 }
 
 .body {
-	border: 2px solid #fffaf0;
+	border: 2px solid var(--textColor);
 	padding: 10px;
-	background-color: black;
+	background-color: var(--backgroundColor);
 }

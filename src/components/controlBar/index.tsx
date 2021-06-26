@@ -6,6 +6,8 @@ import {PatternSelector} from "../patternSelector";
 import {AppMode, Settings, Trail} from "../../utils/settings";
 import {InputRange} from "../inputRange";
 import {TrailControl} from "../trailControl";
+import {PatternColors} from "../patternPreview";
+import {hexNumToHsl} from "../../utils/colorUtils";
 
 export type ControlBarProps = {
   settings: Settings;
@@ -13,7 +15,7 @@ export type ControlBarProps = {
 };
 
 enum Control { None, Pattern, Speed, Trail}
-
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 const CONTROL_NAMES = (Object.keys(Control).map(key => (Control as any)[key]).filter(value => typeof value === 'string') as string[]);
 
 const getControlName = (control: Control): string => {
@@ -27,6 +29,17 @@ type ControlBarState = {
   activeButton: Control;
 };
 
+export const PATTERN_COLORS_DARK: PatternColors = {
+  boardColor: hexNumToHsl(0x1A1A1A),
+  selectedColor: {h: 213, s: 99, l: 50}, // blue
+  unselectedColor: {h: 0, s: 0, l: 100}  // white
+}
+
+const PATTERN_COLORS_LIGHT: PatternColors = {
+  boardColor: hexNumToHsl(0xF0F0F0),
+  selectedColor: {h: 213, s: 99, l: 50}, // blue
+  unselectedColor: {h: 0, s: 0, l: 0}    // black
+}
 
 export class ControlBar extends Component<ControlBarProps, ControlBarState> {
 
@@ -72,20 +85,20 @@ export class ControlBar extends Component<ControlBarProps, ControlBarState> {
   };
 
   onSpeedChanged = (speed: number): void => {
-    this.props.onSettingsChanged({...this.props.settings, speed})
+    this.props.onSettingsChanged({...this.props.settings, speed});
   };
 
   onCellSizeChanged = (event: Event): void => {
     const cellSize: number = parseInt((event.target as HTMLInputElement).value, 10);
-    this.props.onSettingsChanged({...this.props.settings, cellSize})
+    this.props.onSettingsChanged({...this.props.settings, cellSize});
   };
 
   onPatternChanged = (pattern: Pattern): void => {
-    this.props.onSettingsChanged({...this.props.settings, pattern})
+    this.props.onSettingsChanged({...this.props.settings, pattern});
   };
 
   onTrailChanged = (trail: Trail): void => {
-    this.props.onSettingsChanged({...this.props.settings, trail: trail})
+    this.props.onSettingsChanged({...this.props.settings, colors: { ...this.props.settings.colors, activeCellTrail: trail}});
   };
 
   preventModalContainerClick = (event: Event): void => {
@@ -122,6 +135,7 @@ export class ControlBar extends Component<ControlBarProps, ControlBarState> {
         <PatternSelector
           disabled={false}
           value={this.props.settings.pattern}
+          patternColors={this.props.settings.isDarkTheme ? PATTERN_COLORS_DARK : PATTERN_COLORS_LIGHT}
           onChanged={this.onPatternChanged} />
       </div>
       <div className={this.controlClassNames(Control.Speed, activeControl)}>
@@ -133,7 +147,7 @@ export class ControlBar extends Component<ControlBarProps, ControlBarState> {
       </div>
       <div className={this.controlClassNames(Control.Trail, activeControl)}>
         <TrailControl
-          trail={this.props.settings.trail}
+          colors={this.props.settings.colors}
           onChanged={this.onTrailChanged} />
       </div>
       </Fragment>);
@@ -155,7 +169,7 @@ export class ControlBar extends Component<ControlBarProps, ControlBarState> {
         <div class={classNames(style['modal'], {[style['is-open']]: this.state.activeButton !== Control.None})}>
           {this.renderControlHeading(this.state.modalContent)}
           <div class={style['body']}>
-            <div class={classNames(style['field'], style['field-large'])} key="patternField">
+            <div class={classNames(style['field'])}>
               {this.renderControl(this.state.activeButton)}
             </div>
           </div>

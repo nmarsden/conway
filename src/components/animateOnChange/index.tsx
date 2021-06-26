@@ -50,19 +50,20 @@ export class AnimateOnChange extends Component<AnimateOnChangeProps, AnimateOnCh
     this.animationEnd = this.animationEnd.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount (): void {
     const elm = this.ref.current;
     this.addEventListener('start', elm, this.animationStart)
     this.addEventListener('end', elm, this.animationEnd)
   }
 
-  componentWillUnmount () {
+  componentWillUnmount (): void {
     const elm = this.ref.current
     this.removeEventListeners('start', elm, this.animationStart)
     this.removeEventListeners('end', elm, this.animationEnd)
   }
 
-  addEventListener (type: EventType, elm: any, eventHandler: (event: Event) => void) {
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  addEventListener (type: EventType, elm: any, eventHandler: (event: Event) => void): void {
     // until an event has been triggered bind them all
     events[type].map(event => {
       // console.log(`adding ${event}`)
@@ -70,20 +71,21 @@ export class AnimateOnChange extends Component<AnimateOnChangeProps, AnimateOnCh
     })
   }
 
-  removeEventListeners (type: EventType, elm: any, eventHandler: (event: Event) => void) {
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  removeEventListeners (type: EventType, elm: any, eventHandler: (event: Event) => void): void {
     events[type].map(event => {
       // console.log(`removing ${event}`)
       elm.removeEventListener(event, eventHandler)
     })
   }
 
-  updateEvents (type: EventType, newEvent: string) {
+  updateEvents (type: EventType, newEvent: string): void {
     // console.log(`updating ${type} event to ${newEvent}`)
     events[type === 'start' ? 'startRemoved' : 'endRemoved'] = events[type].filter(e => e !== newEvent)
     events[type] = [newEvent]
   }
 
-  animationStart (event: Event) {
+  animationStart (event: Event): void {
     if (events['start'].length > 1) {
       this.updateEvents('start', event.type)
       this.removeEventListeners('startRemoved', this.ref.current, this.animationStart)
@@ -91,7 +93,7 @@ export class AnimateOnChange extends Component<AnimateOnChangeProps, AnimateOnCh
     this.setState({ animating: true, clearAnimationClass: false })
   }
 
-  animationEnd (event: Event) {
+  animationEnd (event: Event): void {
     if (events['end'].length > 1) {
       this.updateEvents('end', event.type)
       this.removeEventListeners('endRemoved', this.ref.current, this.animationStart)
@@ -104,7 +106,7 @@ export class AnimateOnChange extends Component<AnimateOnChangeProps, AnimateOnCh
 
 
 
-  shouldComponentUpdate (nextProps: any, nextState: any) {
+  shouldComponentUpdate (nextProps: Readonly<AnimateOnChangeProps>, nextState: Readonly<AnimateOnChangeState>): boolean {
     if (this.state.animating !== nextState.animating) {
       // do not render on animation change
       return false

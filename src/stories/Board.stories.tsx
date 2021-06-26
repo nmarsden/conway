@@ -29,7 +29,7 @@ const boardProps = (args: BoardStoryArgs): BoardProps => {
     cellData: PatternProvider.getPatternData((Pattern as never)[pattern], NUM_COLUMNS, NUM_ROWS),
     numColumns: NUM_COLUMNS,
     numRows: NUM_ROWS,
-    trail: DEFAULT_SETTINGS.trail,
+    colors: DEFAULT_SETTINGS.colors,
     cellSize: 20,
     boardWidth: NUM_COLUMNS,
     boardHeight: NUM_ROWS,

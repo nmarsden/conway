@@ -2,10 +2,11 @@ import {Component, createRef, h} from 'preact';
 import {Pattern, SORTED_PATTERN_NAMES} from "../../utils/simulator";
 import {FlickingEvent, SelectEvent, FlickingPanel} from "@egjs/flicking";
 import Flicking from "@egjs/preact-flicking";
-import {PatternPreview} from "../patternPreview";
+import {PatternColors, PatternPreview} from "../patternPreview";
 
 export type PatternSelectorProps = {
   value: Pattern;
+  patternColors: PatternColors;
   onChanged: (pattern: Pattern) => void;
   disabled: boolean;
 };
@@ -49,7 +50,7 @@ export class PatternSelector extends Component<PatternSelectorProps, PatternSele
     this.updateVisibility(this.state.patternItems);
   }
 
-  componentDidUpdate(prevProps: any, prevState: any): void {
+  componentDidUpdate(prevProps: Readonly<PatternSelectorProps>): void {
       if (prevProps.value !== this.props.value) {
         if (this.ref.current) {
           this.ref.current.moveTo(this.getPatternIndex(this.props.value));
@@ -83,7 +84,7 @@ export class PatternSelector extends Component<PatternSelectorProps, PatternSele
     return n >= range.min && n <= range.max;
   }
 
-  updatePatternItemsState = (selectedPattern: Pattern) => {
+  updatePatternItemsState = (selectedPattern: Pattern): void => {
     const updatedPatternItems = [ ...this.state.patternItems ];
     updatedPatternItems.forEach(item => item.isSelected = (item.pattern === selectedPattern));
     this.setState( { patternItems: updatedPatternItems });
@@ -101,7 +102,7 @@ export class PatternSelector extends Component<PatternSelectorProps, PatternSele
         // }}
         // onMoveStart={(e: FlickingEvent) => {
         // }}
-        onMove={(e: FlickingEvent) => {
+        onMove={(e: FlickingEvent): void => {
           const flicking = e.currentTarget;
 
           const updatedPatternItems = [ ...this.state.patternItems ];
@@ -120,7 +121,7 @@ export class PatternSelector extends Component<PatternSelectorProps, PatternSele
         // }}
         // onVisibleChange={(e: VisibleChangeEvent) => {
         // }}
-        onSelect={(e: SelectEvent) => {
+        onSelect={(e: SelectEvent): void => {
           const selectedPattern = this.state.patternItems[e.index].pattern;
 
           this.updatePatternItemsState(selectedPattern);
@@ -137,7 +138,7 @@ export class PatternSelector extends Component<PatternSelectorProps, PatternSele
         lastIndex={Infinity}
         threshold={70}
         duration={100}
-        panelEffect={x => 1 - Math.pow(1 - x, 3)} // easeOutCubic
+        panelEffect={(x): number => 1 - Math.pow(1 - x, 3)} // easeOutCubic
         defaultIndex={defaultIndex}
         inputType={["touch", "mouse"]}
         thresholdAngle={45}
@@ -161,6 +162,7 @@ export class PatternSelector extends Component<PatternSelectorProps, PatternSele
           return <PatternPreview
             key={index}
             pattern={patternItem.pattern}
+            patternColors={this.props.patternColors}
             isSelected={patternItem.isSelected}
             isVisible={patternItem.isVisible}
           />

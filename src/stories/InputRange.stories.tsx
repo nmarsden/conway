@@ -9,7 +9,7 @@ export default {
   }
 };
 
-export const Example = () => <InputRange min={1}
-                                         max={10}
-                                         value={5}
-                                         onChanged={(): void => { /* do nothing */ }} />;
+export const Example = (): JSX.Element => <InputRange min={1}
+                                                      max={10}
+                                                      value={5}
+                                                      onChanged={(): void => { /* do nothing */ }} />;

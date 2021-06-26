@@ -1,5 +1,6 @@
 import {Pattern} from "./simulator";
 import {HSLColor} from "./colorUtils";
+import {BoardColors} from "../components/board";
 
 export enum AppMode { Auto,Custom }
 
@@ -13,5 +14,6 @@ export type Settings = {
   speed: number;
   cellSize: number;
   pattern: Pattern;
-  trail: Trail;
+  colors: BoardColors;
+  isDarkTheme: boolean;
 }

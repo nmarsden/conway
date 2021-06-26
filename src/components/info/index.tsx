@@ -2,7 +2,6 @@ import {Component, h} from 'preact';
 import style from './style.css';
 import {getPatternDisplayName, Pattern} from "../../utils/simulator";
 import {AnimateOnChange} from "../animateOnChange";
-import * as PIXI from "pixi.js";
 
 export type InfoProps = {
   pattern: Pattern;
@@ -22,13 +21,13 @@ export class Info extends Component<InfoProps, InfoState> {
     };
   }
 
-  componentDidUpdate(prevProps: any, prevState: any): void {
+  componentDidUpdate(prevProps: Readonly<InfoProps>): void {
     if (prevProps.pattern !== this.props.pattern) {
       this.updateAnimateState();
     }
   }
 
-  updateAnimateState = () => {
+  updateAnimateState = (): void => {
     this.setState( { animate: true }, () => {
       window.setTimeout(() => this.setState({ animate: false }), 100);
     });

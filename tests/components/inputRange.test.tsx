@@ -5,7 +5,7 @@ import {InputRange} from "../../src/components/inputRange";
 
 describe('InputRange', () => {
     let context: ShallowWrapper;
-    const onChangedHandler = (value: number): void => { };
+    const onChangedHandler = (): void => { /* do nothing */ };
 
     beforeEach( () => {
         context = shallow(<InputRange

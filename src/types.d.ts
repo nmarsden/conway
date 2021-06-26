@@ -1,6 +1,7 @@
 // src/types.d.ts
 import React from 'react'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
   namespace React {
     interface ReactElement {
@@ -10,3 +11,4 @@ declare global {
     }
   }
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */

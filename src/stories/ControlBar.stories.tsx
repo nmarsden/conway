@@ -10,6 +10,6 @@ export default {
   }
 };
 
-export const Example = () => <ControlBar settings={DEFAULT_SETTINGS}
+export const Example = (): JSX.Element => <ControlBar settings={DEFAULT_SETTINGS}
                                          onSettingsChanged={(): void => { /* do nothing */}} />;
 

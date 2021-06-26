@@ -1,7 +1,7 @@
 // Mock Browser API's which are not supported by JSDOM, e.g. ServiceWorker, LocalStorage
-/**
- * An example how to mock localStorage is given below 👇
- */
+
+// Mock canvas
+import 'jest-canvas-mock';
 
 /* 
 // Mocks localStorage

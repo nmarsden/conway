@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import {Trail} from "./settings";
 
 export type HSLColor = {h: number; s: number; l: number };
 
@@ -18,7 +19,7 @@ export function hslToHexNum(color: HSLColor): number {
   return PIXI.utils.string2hex(hslToHexString(color));
 }
 
-export function hexToHSL(H: string): HSLColor {
+export function hexStringToHsl(H: string): HSLColor {
   // Convert hex to RGB first
   let r = 0, g = 0, b = 0;
   if (H.length == 4) {
@@ -63,6 +64,10 @@ export function hexToHSL(H: string): HSLColor {
   return { h, s, l };
 }
 
+export function hexNumToHsl(hexNum: number): HSLColor {
+  return hexStringToHsl(PIXI.utils.hex2string(hexNum));
+}
+
 export function lerpColor(ah: number, bh: number, amount: number): number {
 
   if (ah === bh || amount === 1) {
@@ -81,4 +86,38 @@ export function lerpColor(ah: number, bh: number, amount: number): number {
   const rb = ab + amount * (bb - ab);
 
   return (rr << 16) + (rg << 8) + (rb | 0);
+}
+
+export function buildTrail(startHue: number, endHue: number, size: number, background: HSLColor): Trail {
+  const colors: HSLColor[] = [];
+  let h, s, l;
+  const hueShift = size === 1 ? 0 : (endHue - startHue) / (size - 1);
+  const isDarkTheme = background.l < 50;
+  if (isDarkTheme) {
+    for (let i = 0; i < size; i++) {
+      h = (i === 0) ? startHue : Math.floor(startHue + (hueShift * i));
+      s = (i === 0) ? 100 : Math.floor(45 + (15 * (1 - (i / size))));
+      l = (i === 0) ? 50 : Math.floor(10 + (15 * (1 - (i / size))));
+
+      colors.push({h, s, l})
+    }
+  } else {
+    for (let i = 0; i < size; i++) {
+      h = (i === 0) ? startHue : Math.floor(startHue + (hueShift * i));
+      s = (i === 0) ? 100 : Math.floor(65 + (15 * (1 - (i / size))));
+      l = (i === 0) ? 30 : Math.floor(75 + (15 * (i / size)));
+
+      colors.push({h, s, l})
+    }
+  }
+  return {
+    colors,
+    size
+  }
+}
+
+export function rebuildTrail(trail: Trail, background: HSLColor): Trail {
+  const startHue = trail.colors[0].h;
+  const endHue = trail.colors[trail.colors.length-1].h;
+  return buildTrail(startHue, endHue, trail.colors.length, background);
 }

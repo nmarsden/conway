@@ -5,19 +5,27 @@ import {AppMode, Settings} from "../utils/settings";
 import {Info} from "./info";
 import {Board} from './board';
 import {ControlBar} from "./controlBar";
-import {buildTrail} from "./trailControl";
+import {ThemeToggle} from "./themeToggle";
+import {Themer} from "../utils/themer";
+import {buildTrail, hexNumToHsl, rebuildTrail} from "../utils/colorUtils";
 
 export const NUM_COLUMNS = 100;
 export const NUM_ROWS = 100;
-const TRAIL_START_HUE = 157;
-const TRAIL_END_HUE = 0;
+export const TRAIL_START_HUE = 157;
+export const TRAIL_END_HUE = 0;
+export const CELL_INACTIVE_LIGHT_MODE = hexNumToHsl(0xF0F0F0); // {h:0,s:0,l:94.1}
+export const CELL_INACTIVE_DARK_MODE = hexNumToHsl(0x1A1A1A);  // {h:0,s:0,l:10}
 
 export const DEFAULT_SETTINGS: Settings = {
   mode: AppMode.Auto,
   speed: 10,
   cellSize: 20,
   pattern: Pattern.Glider,
-  trail: buildTrail(TRAIL_START_HUE, TRAIL_END_HUE, 20)
+  colors: {
+    inactiveCell: CELL_INACTIVE_DARK_MODE,
+    activeCellTrail: buildTrail(TRAIL_START_HUE, TRAIL_END_HUE, 20, CELL_INACTIVE_DARK_MODE)
+  },
+  isDarkTheme: true,
 }
 
 type AppProps = {};
@@ -62,7 +70,7 @@ class App extends Component<AppProps, AppState> {
     }
     const simulator = this.initSimulator(settings.pattern);
     this.initAppState(settings, simulator);
-    this.initNextGenStateUpdater(simulator, settings.speed, settings.trail.size);
+    this.initNextGenStateUpdater(simulator, settings.speed, settings.colors.activeCellTrail.size);
   };
 
   private initSimulator(pattern: Pattern): Simulator {
@@ -91,6 +99,21 @@ class App extends Component<AppProps, AppState> {
     nextGenStateUpdater.start();
   }
 
+  themeChanged = (isDarkTheme: boolean): void => {
+    Themer.updateTheme(isDarkTheme);
+    const inactiveCell = isDarkTheme ? CELL_INACTIVE_DARK_MODE : CELL_INACTIVE_LIGHT_MODE;
+    const colors = {
+      inactiveCell,
+      activeCellTrail: rebuildTrail(this.state.settings.colors.activeCellTrail, inactiveCell)
+    }
+
+    this.setState({ settings: {
+        ...this.state.settings,
+        isDarkTheme,
+        colors
+    }});
+  }
+
   settingsChanged = (settings: Settings): void => {
     const cellSizeChanged = (settings.cellSize !== this.state.settings.cellSize);
     const patternChanged = (settings.pattern !== this.state.settings.pattern);
@@ -110,7 +133,7 @@ class App extends Component<AppProps, AppState> {
     else {
       this.setState({settings});
       nextGenStateUpdater.setSpeed(settings.speed);
-      nextGenStateUpdater.setTrailSize(settings.trail.size);
+      nextGenStateUpdater.setTrailSize(settings.colors.activeCellTrail.size);
     }
   }
 
@@ -130,7 +153,7 @@ class App extends Component<AppProps, AppState> {
       numColumns: simulator.getSettings().numColumns,
       numRows: simulator.getSettings().numRows
     });
-    this.initNextGenStateUpdater(simulator, this.state.settings.speed, this.state.settings.trail.size);
+    this.initNextGenStateUpdater(simulator, this.state.settings.speed, this.state.settings.colors.activeCellTrail.size);
   }
 
   disableSmoothCamera = (): void  => {
@@ -141,7 +164,7 @@ class App extends Component<AppProps, AppState> {
       this.setState( { isSmoothCamera: true });
   }
 
-  componentDidUpdate(previousProps: Readonly<AppProps>, previousState: Readonly<AppState>) {
+  componentDidUpdate(previousProps: Readonly<AppProps>, previousState: Readonly<AppState>): void {
     if (!previousState.isSmoothCamera) {
       this.enableSmoothCamera();
     }
@@ -160,7 +183,7 @@ class App extends Component<AppProps, AppState> {
         <Board numColumns={this.state.numColumns}
                numRows={this.state.numRows}
                cellData={this.state.generation.cellData}
-               trail={this.state.settings.trail}
+               colors={this.state.settings.colors}
                cellSize={this.state.settings.cellSize}
                isFullScreen={true}
                boardWidth={0}
@@ -168,6 +191,7 @@ class App extends Component<AppProps, AppState> {
                isSmoothCamera={this.state.isSmoothCamera}
                speed={this.state.settings.speed}
         />
+        <ThemeToggle isDark={this.state.settings.isDarkTheme} onThemeChanged={this.themeChanged} />
         <ControlBar settings={this.state.settings}
                     onSettingsChanged={this.settingsChanged} />
       </div>

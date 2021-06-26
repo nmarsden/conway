@@ -1,7 +1,7 @@
 import {h, Fragment, Component} from "preact";
 import style from './style.css';
 import {HexColorPicker} from "react-colorful";
-import {hexToHSL, hslToHexString} from "../../utils/colorUtils";
+import {hexStringToHsl, hslToHexString} from "../../utils/colorUtils";
 import classNames from "classnames";
 
 export type ColorPickerProps = {
@@ -14,10 +14,11 @@ type ColorPickerState = {
   isOpen: boolean;
   popupPosition: { top: number; left: number };
 };
-
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 function throttle(fn: (...args: any) => void, wait: number): (...args: any) => void {
   let isCalled = false;
 
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   return (...args: any): void => {
     if (!isCalled){
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -52,7 +53,7 @@ export class ColorPicker extends Component<ColorPickerProps, ColorPickerState> {
 
   onColorChanged = (newColor: string): void => {
     this.setState({ selectedColor: newColor })
-    this.props.onChanged(hexToHSL(newColor).h);
+    this.props.onChanged(hexStringToHsl(newColor).h);
   };
 
   onColorChangedThrottle = throttle(this.onColorChanged, 100);

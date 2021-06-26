@@ -6,6 +6,6 @@ export default {
   component: ColorPicker
 };
 
-export const Example = () => <ColorPicker hue={10}
+export const Example = (): JSX.Element => <ColorPicker hue={10}
                                           onChanged={(): void => { /* do nothing */ } } />
 

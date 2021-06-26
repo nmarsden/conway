@@ -2,19 +2,27 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 80px;
-    height: 116px;
+    width: 82px;
+    height: 118px;
+    border: 1px solid var(--backgroundColor);
+}
+
+.pattern-preview.selected {
+    border: 1px solid var(--accentColor);
 }
 
 .patternName {
     height: 36px;
     text-align: center;
-    color: white;
+    color: var(--textColor);
+    background-color: var(--backgroundColor);
     font-size: 12px;
     padding-top: 4px;
     padding-bottom: 4px;
+    width: 100%;
 }
 
 .selected .patternName {
-    color: hsl(157, 71%, 60%);
+    color: white;
+    background-color: var(--accentColor);
 }

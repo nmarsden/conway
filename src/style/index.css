@@ -1,15 +1,28 @@
+:root {
+	--backgroundColor: black;
+	--modalBackgroundColor: rgba(0, 0, 0, 0.9);
+	--textColor: white;
+	--accentColor: hsl(213, 99%, 50%);
+	--closeIcon: url('../assets/icons/close-icon-dark.svg');
+	--gearIcon: url('../assets/icons/gear-icon-dark.svg');
+	--patternIcon: url('../assets/icons/pattern-icon-dark.svg');
+	--speedIcon: url('../assets/icons/speed-icon-dark.svg');
+	--trailIcon: url('../assets/icons/trail-icon-dark.svg');
+}
+
 html, body {
 	height: 100%;
 	width: 100%;
 	padding: 0;
 	margin: 0;
-	background: #000000;
+	background: var(--backgroundColor);
 	font-family: 'Roboto Light', arial, sans-serif;
 	font-weight: 400;
 	color: #444;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	overflow: hidden;
+	transition: background 1.5s;
 }
 
 * {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#FFF">
+    <circle cx="250" cy="250" r="30"/>
+    <rect x="185" y="235" width="111" height="30" transform="matrix(0.707106, -0.707107, 0.707107, 0.707106, -57.592003, 204.038559)"/>
+    <path style="" transform="matrix(1.471023, 0, 0, 1.292518, -71.628662, -245.154556)" d="M 106 476 A 147 147 0 1 1 332 476 L 289 440 A 91 91 0 1 0 149 440 Z"/>
+  </g>
+</svg>

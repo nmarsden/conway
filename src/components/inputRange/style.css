@@ -9,7 +9,7 @@
 .value {
     font-size: 40px;
     font-weight: bold;
-    color: hsl(157, 71%, 60%);
+    color: var(--accentColor);
     margin-bottom: 10px;
 }
 
