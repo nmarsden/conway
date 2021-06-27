@@ -34,11 +34,7 @@ export class TrailControl extends Component<TrailControlProps, TrailControlState
   }
 
   updateStateWithTrail(trail: Trail): void {
-    this.setState({
-      trail,
-      startHue: trail.colors[0].h,
-      endHue: trail.colors[trail.colors.length - 1].h
-    });
+    this.setState({trail});
   }
 
   onTrailStartHueChanged = (hue: number): void => {
