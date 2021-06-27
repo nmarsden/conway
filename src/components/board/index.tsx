@@ -217,14 +217,13 @@ export class Board extends Component<BoardProps, BoardState> {
       const MIN_SCALE = 0.01;
       const MAX_SCALE = 10;
 
-      // determine bounds of active cells (minX, minY, maxX & maxY) with padding
-      // Note: both values 1 & 2 are included in bounds to try and prevent the bounds constantly changing for a repeating pattern (eg. blinker)
+      // determine bounds of currently & historically active cells (minX, minY, maxX & maxY) with padding
       let minX = Number.MAX_VALUE;
       let maxX = 0;
       let minY = Number.MAX_VALUE;
       let maxY = 0;
       for (let i = 0; i < this.props.cellData.length; i++) {
-        if (this.props.cellData[i] === 1 || this.props.cellData[i] === 2) {
+        if (this.props.cellData[i] !== 0) {
           const cellX = this.cells[i].x;
           if (cellX < minX) {
             minX = cellX;
