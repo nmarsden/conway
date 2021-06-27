@@ -225,6 +225,13 @@ export class Simulator {
     }
   }
 
+  currentGeneration(historySize: number): Generation {
+    return {
+      num: this.generation.num,
+      cellData: this.getCurrentGenCellDataWithHistory(historySize)
+    }
+  }
+
   private applyPatternData(cellDataToUpdate: number[], patternData: string[]): void {
     const patternWidth = patternData[0].length;
     const patternHeight = patternData.length;

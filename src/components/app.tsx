@@ -42,6 +42,7 @@ let nextGenStateUpdater: NextGenStateUpdater;
 
 class App extends Component<AppProps, AppState> {
 
+  private simulator: Simulator | undefined;
   private autoTimerHandle: number | undefined;
 
   constructor(props: AppProps) {
@@ -68,9 +69,9 @@ class App extends Component<AppProps, AppState> {
     if (settings.mode === AppMode.Auto) {
       this.startAutoMode();
     }
-    const simulator = this.initSimulator(settings.pattern);
-    this.initAppState(settings, simulator);
-    this.initNextGenStateUpdater(simulator, settings.speed, settings.colors.activeCellTrail.size);
+    this.simulator = this.initSimulator(settings.pattern);
+    this.initAppState(settings, this.simulator);
+    this.initNextGenStateUpdater(this.simulator, settings.speed, settings.colors.activeCellTrail.size);
   };
 
   private initSimulator(pattern: Pattern): Simulator {
@@ -118,6 +119,7 @@ class App extends Component<AppProps, AppState> {
     const cellSizeChanged = (settings.cellSize !== this.state.settings.cellSize);
     const patternChanged = (settings.pattern !== this.state.settings.pattern);
     const modeChanged = (settings.mode !== this.state.settings.mode);
+    const trailSizeChanged = (settings.colors.activeCellTrail.size !== this.state.settings.colors.activeCellTrail.size);
 
     if (modeChanged) {
       this.updateMode(settings.mode);
@@ -125,6 +127,11 @@ class App extends Component<AppProps, AppState> {
 
     if (patternChanged) {
       this.disableSmoothCamera();
+    }
+
+    if (trailSizeChanged) {
+      const generation = this.simulator?.currentGeneration(settings.colors.activeCellTrail.size - 1);
+      this.setState({generation});
     }
 
     if (cellSizeChanged || patternChanged) {
@@ -146,14 +153,14 @@ class App extends Component<AppProps, AppState> {
   }
 
   resetSimulation(cellSize: number, pattern: Pattern): void {
-    const simulator = this.initSimulator(pattern);
+    this.simulator = this.initSimulator(pattern);
     this.setState({
       settings: { ...this.state.settings, cellSize, pattern },
-      generation: simulator.initialGeneration(),
-      numColumns: simulator.getSettings().numColumns,
-      numRows: simulator.getSettings().numRows
+      generation: this.simulator.initialGeneration(),
+      numColumns: this.simulator.getSettings().numColumns,
+      numRows: this.simulator.getSettings().numRows
     });
-    this.initNextGenStateUpdater(simulator, this.state.settings.speed, this.state.settings.colors.activeCellTrail.size);
+    this.initNextGenStateUpdater(this.simulator, this.state.settings.speed, this.state.settings.colors.activeCellTrail.size);
   }
 
   disableSmoothCamera = (): void  => {
