@@ -182,7 +182,7 @@ export class About extends Component<AboutProps, AboutState> {
   };
 
   pageButtonClicked = (slideIndex: number): () => void => {
-    return () => {
+    return (): void => {
       this.setState({activeSlideIndex: slideIndex});
     }
   };
