@@ -5,16 +5,18 @@ const THEMES: Themes = {
     backgroundColor: "black",
     modalBackgroundColor: "rgba(0, 0, 0, 0.9)",
     accentColor: "hsl(213, 99%, 50%);",
+    inactiveCellColor: "#1A1A1A"
 },
   light: {
     textColor: "black",
     backgroundColor: "white",
     modalBackgroundColor: "rgba(255, 255, 255, 0.9)",
     accentColor: "hsl(213, 99%, 50%);",
+    inactiveCellColor: "#F0F0F0"
   }
 };
 
-const ICONS = ["closeIcon", "gearIcon", "patternIcon", "speedIcon", "trailIcon"];
+const ICONS = ["infoIcon", "closeIcon", "gearIcon", "patternIcon", "speedIcon", "trailIcon"];
 
 type Themes = {
   dark: Theme;
@@ -26,6 +28,7 @@ type Theme = {
   backgroundColor: string;
   modalBackgroundColor: string;
   accentColor: string;
+  inactiveCellColor: string;
 }
 
 export class Themer {

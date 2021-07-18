@@ -8,6 +8,7 @@ import {ControlBar} from "./controlBar";
 import {ThemeToggle} from "./themeToggle";
 import {Themer} from "../utils/themer";
 import {buildTrail, hexNumToHsl, rebuildTrail} from "../utils/colorUtils";
+import {About} from "./about";
 
 export const NUM_COLUMNS = 100;
 export const NUM_ROWS = 100;
@@ -201,6 +202,7 @@ class App extends Component<AppProps, AppState> {
         <ThemeToggle isDark={this.state.settings.isDarkTheme} onThemeChanged={this.themeChanged} />
         <ControlBar settings={this.state.settings}
                     onSettingsChanged={this.settingsChanged} />
+        <About />
       </div>
     );
   }

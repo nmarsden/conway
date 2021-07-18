@@ -3,19 +3,24 @@
 	--modalBackgroundColor: rgba(0, 0, 0, 0.9);
 	--textColor: white;
 	--accentColor: hsl(213, 99%, 50%);
+	--inactiveCellColor: #1A1A1A;
+	--activeCellColor: #00FF93;
 
+	--infoIconDark: url('../assets/icons/info-icon-dark.svg');
 	--closeIconDark: url('../assets/icons/close-icon-dark.svg');
 	--gearIconDark: url('../assets/icons/gear-icon-dark.svg');
 	--patternIconDark: url('../assets/icons/pattern-icon-dark.svg');
 	--speedIconDark: url('../assets/icons/speed-icon-dark.svg');
 	--trailIconDark: url('../assets/icons/trail-icon-dark.svg');
 	
+	--infoIconLight: url('../assets/icons/info-icon-light.svg');
 	--closeIconLight: url('../assets/icons/close-icon-light.svg');
 	--gearIconLight: url('../assets/icons/gear-icon-light.svg');
 	--patternIconLight: url('../assets/icons/pattern-icon-light.svg');
 	--speedIconLight: url('../assets/icons/speed-icon-light.svg');
 	--trailIconLight: url('../assets/icons/trail-icon-light.svg');
 	
+	--infoIcon: var(--infoIconDark);
 	--closeIcon: var(--closeIconDark);
 	--gearIcon: var(--gearIconDark);
 	--patternIcon: var(--patternIconDark);
