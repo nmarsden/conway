@@ -209,7 +209,10 @@ export class About extends Component<AboutProps, AboutState> {
         <button className={classNames(style['info-button'], {[style['is-hidden']]: this.state.isModalOpen})} onClick={this.infoButtonClicked} />
         <div className={classNames(style['modal'], {[style['is-open']]: this.state.isModalOpen})}>
           <button className={style['close-button']} onClick={this.modalCloseButtonClicked} />
-          <div className={style['header']}>Conway's Game of Life</div>
+          <div className={style['header']}>
+            <div>Conway's</div>
+            <div>Game of Life</div>
+          </div>
           <div className={style['body']}>
             <div>
             { this.state.slides.map( (slide, index) =>

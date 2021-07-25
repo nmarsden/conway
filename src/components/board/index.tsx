@@ -4,6 +4,7 @@ import {HSLColor, hslToHexNum, lerpColor} from "../../utils/colorUtils";
 import {Trail} from "../../utils/settings";
 
 PIXI.utils.skipHello();
+const loader = PIXI.Loader.shared;
 
 const FRAMES_PER_SECOND = 60;  // Valid values are 60,30,20,15,10...
 const FRAME_MIN_TIME = (1000/60) * (60 / FRAMES_PER_SECOND) - (1000/60) * 0.5;
@@ -24,6 +25,7 @@ export type BoardProps = {
   boardHeight: number;
   isSmoothCamera: boolean;
   speed: number;
+  onReady?: () => void;
 };
 
 type BoardState = {};
@@ -83,6 +85,10 @@ export class Board extends Component<BoardProps, BoardState> {
     // this.logWebGLSupport();
 
     this._rafId = window.requestAnimationFrame(this.draw);
+
+    if (!this.props.isFullScreen && this.props.onReady) {
+      this.props.onReady();
+    }
   }
 
   componentWillUnmount(): void {
@@ -129,15 +135,23 @@ export class Board extends Component<BoardProps, BoardState> {
 
   initBackgroundGrid(): void {
     if (this.props.isFullScreen && !this.backgroundImage) {
-      this.backgroundImage = PIXI.Sprite.from('assets/images/grid.svg');
-      this.backgroundImage.tint = this.inactiveTint;
-
-      const background = new PIXI.Container();
-      background.zIndex = 0;
-      background.addChild(this.backgroundImage);
-      this.scene?.addChild(background);
+      loader.add('grid', 'assets/images/grid.svg').load(this.onAssetsLoaded)
     }
   }
+
+  onAssetsLoaded = (loader: any, resources: any): void => {
+    this.backgroundImage = PIXI.Sprite.from(resources.grid.texture);
+    this.backgroundImage.tint = this.inactiveTint;
+
+    const background = new PIXI.Container();
+    background.zIndex = 0;
+    background.addChild(this.backgroundImage);
+    this.scene?.addChild(background);
+
+    if (this.props.onReady) {
+      this.props.onReady();
+    }
+  };
 
   createCellSprites(): PIXI.Sprite[] {
     const rectSize = this.cellSize - 2;

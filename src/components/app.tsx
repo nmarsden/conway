@@ -9,6 +9,7 @@ import {ThemeToggle} from "./themeToggle";
 import {Themer} from "../utils/themer";
 import {buildTrail, hexNumToHsl, rebuildTrail} from "../utils/colorUtils";
 import {About} from "./about";
+import {Loading} from "./loading";
 
 export const NUM_COLUMNS = 100;
 export const NUM_ROWS = 100;
@@ -37,6 +38,7 @@ type AppState = {
   numColumns: number;
   numRows: number;
   isSmoothCamera: boolean;
+  isLoading: boolean;
 };
 
 let nextGenStateUpdater: NextGenStateUpdater;
@@ -89,7 +91,8 @@ class App extends Component<AppProps, AppState> {
       generation: simulator.initialGeneration(),
       numColumns: simulator.getSettings().numColumns,
       numRows: simulator.getSettings().numRows,
-      isSmoothCamera: true
+      isSmoothCamera: true,
+      isLoading: true
     };
   }
 
@@ -182,9 +185,14 @@ class App extends Component<AppProps, AppState> {
     nextGenStateUpdater.stop();
   }
 
+  onBoardReady = (): void => {
+    this.setState( { isLoading: false });
+  }
+
   render(): JSX.Element {
     return (
       <div id="app">
+        <Loading isShown={this.state.isLoading} />
         <Info pattern={this.state.settings.pattern}
               generationNum={this.state.generation.num}
         />
@@ -198,6 +206,7 @@ class App extends Component<AppProps, AppState> {
                boardHeight={0}
                isSmoothCamera={this.state.isSmoothCamera}
                speed={this.state.settings.speed}
+               onReady={this.onBoardReady}
         />
         <ThemeToggle isDark={this.state.settings.isDarkTheme} onThemeChanged={this.themeChanged} />
         <ControlBar settings={this.state.settings}
