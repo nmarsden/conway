@@ -37,6 +37,7 @@ export class Board extends Component<BoardProps, BoardState> {
   private colors: BoardColors;
   private renderer?: PIXI.Renderer;
   private scene?: PIXI.Container;
+  private cellsContainer?: PIXI.Container;
   private cells?: Array<PIXI.Sprite>;
   private inactiveTint: number;
   private activeTints?: Map<number, number>;
@@ -44,6 +45,7 @@ export class Board extends Component<BoardProps, BoardState> {
   private lastDrawTime: number;
   private isSmoothCamera: boolean;
   private animationTimeTaken: number;
+  private backgroundImage?: PIXI.Sprite;
   private cellData: number[];
 
   constructor(props: BoardProps) {
@@ -70,6 +72,8 @@ export class Board extends Component<BoardProps, BoardState> {
 
   componentDidMount(): void {
     this.scene = new PIXI.Container();
+    this.scene.sortableChildren = true;
+
     this.renderer = this.createRenderer();
 
     this.resetTints();
@@ -106,6 +110,9 @@ export class Board extends Component<BoardProps, BoardState> {
     for (let active=1; active <= this.colors.activeCellTrail.size; active++) {
       this.activeTints.set(active, hslToHexNum(this.colors.activeCellTrail.colors[active-1]));
     }
+    if (this.backgroundImage) {
+      this.backgroundImage.tint = this.inactiveTint;
+    }
   }
 
   resetRendererSize(): void {
@@ -118,6 +125,18 @@ export class Board extends Component<BoardProps, BoardState> {
       pageWidth,
       pageHeight
     );
+  }
+
+  initBackgroundGrid(): void {
+    if (this.props.isFullScreen && !this.backgroundImage) {
+      this.backgroundImage = PIXI.Sprite.from('assets/images/grid.svg');
+      this.backgroundImage.tint = this.inactiveTint;
+
+      const background = new PIXI.Container();
+      background.zIndex = 0;
+      background.addChild(this.backgroundImage);
+      this.scene?.addChild(background);
+    }
   }
 
   createCellSprites(): PIXI.Sprite[] {
@@ -139,7 +158,7 @@ export class Board extends Component<BoardProps, BoardState> {
       const sprite = new PIXI.Sprite(cellTexture)
       sprite.position.x = x;
       sprite.position.y = y;
-      sprite.alpha = 1;
+      sprite.visible = false;
 
       cellSprites.push(sprite);
     }
@@ -147,16 +166,21 @@ export class Board extends Component<BoardProps, BoardState> {
   }
 
   resetScene(): void {
-    // remove all children from scene
-    this.scene?.removeChildren();
+    this.initBackgroundGrid();
+
+    // remove cellsContainer from scene
+    if (this.cellsContainer) {
+      this.scene?.removeChild(this.cellsContainer);
+    }
 
     // add cells to scene
     this.cells = this.createCellSprites();
-    const cellsContainer = new PIXI.Container();
+    this.cellsContainer = new PIXI.Container();
+    this.cellsContainer.zIndex = 1;
     for (const cell of this.cells) {
-      cellsContainer.addChild(cell);
+      this.cellsContainer.addChild(cell);
     }
-    this.scene?.addChild(cellsContainer);
+    this.scene?.addChild(this.cellsContainer);
   }
 
   resetAnimationTimeTakenIfNecessary(): void {
@@ -191,8 +215,10 @@ export class Board extends Component<BoardProps, BoardState> {
         const cellValue = this.props.cellData[i];
         if (cellValue === 0) {
           this.cells[i].tint = this.inactiveTint;
+          this.cells[i].visible = false;
         } else {
           this.cells[i].tint = this.activeTints.get(cellValue) as number;
+          this.cells[i].visible = true;
         }
       }
     }
@@ -203,9 +229,12 @@ export class Board extends Component<BoardProps, BoardState> {
       for (let i = 0; i < this.props.cellData.length; i++) {
         const cellValue = this.props.cellData[i];
         if (cellValue === 0) {
-          this.cells[i].tint = lerpColor(this.cells[i].tint, this.inactiveTint, lerpAmount);
+          const newTint = lerpColor(this.cells[i].tint, this.inactiveTint, lerpAmount);
+          this.cells[i].tint = newTint;
+          this.cells[i].visible = (newTint !== this.inactiveTint);
         } else {
           this.cells[i].tint = lerpColor(this.cells[i].tint, this.activeTints.get(cellValue) as number, lerpAmount);
+          this.cells[i].visible = true;
         }
       }
     }

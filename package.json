@@ -12,7 +12,8 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "svgGridGenerator": "node tools/svgGridGenerator.js"
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
